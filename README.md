@@ -27,7 +27,7 @@ A short description of the project.
 │                         `1.0-jqp-initial-data-exploration`.
 │
 ├── pyproject.toml     <- Project configuration file with package metadata for 
-│                         knowledge_augmented_image_contrastive_clustering and configuration for tools like black
+│                         kaicc and configuration for tools like black
 │
 ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
 │
@@ -39,9 +39,9 @@ A short description of the project.
 │
 ├── setup.cfg          <- Configuration file for flake8
 │
-└── knowledge_augmented_image_contrastive_clustering   <- Source code for use in this project.
+└── kaicc   <- Source code for use in this project.
     │
-    ├── __init__.py             <- Makes knowledge_augmented_image_contrastive_clustering a Python module
+    ├── __init__.py             <- Makes kaicc a Python module
     │
     ├── config.py               <- Store useful variables and configuration
     │

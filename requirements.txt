@@ -1,4 +1,1 @@
-pip
-python-dotenv
-ruff
--e .
+-e .[dev]

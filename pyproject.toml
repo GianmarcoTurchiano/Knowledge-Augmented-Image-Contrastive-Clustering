@@ -3,8 +3,19 @@ requires = ["flit_core >=3.2,<4"]
 build-backend = "flit_core.buildapi"
 
 [project]
-name = "knowledge_augmented_image_contrastive_clustering"
+name = "kaicc"
 version = "0.0.1"
+dependencies = [
+  "scikit-learn==1.6.1",
+  "matplotlib==3.10.1",
+  "tqdm==4.67.1",
+  "torch==2.6.0",
+  "torchaudio==2.6.0",
+  "torchvision==0.21.0",
+  "umap-learn==0.5.7",
+  "transformers==4.51.3",
+  "torch-geometric==2.6.1"
+]
 description = "A short description of the project."
 authors = [
   { name = "Gianmarco Turchiano" },
@@ -17,16 +28,23 @@ classifiers = [
 ]
 requires-python = "~=3.10.0"
 
+[project.optional-dependencies]
+dev = [
+  "dvc==3.59.1",
+  "dvc-s3==3.2.0",
+  "mlflow==2.20.3",
+  "python-dotenv==1.0.1"
+]
 
 [tool.ruff]
 line-length = 99
-src = ["knowledge_augmented_image_contrastive_clustering"]
-include = ["pyproject.toml", "knowledge_augmented_image_contrastive_clustering/**/*.py"]
+src = ["kaicc"]
+include = ["pyproject.toml", "kaicc/**/*.py"]
 
 [tool.ruff.lint]
 extend-select = ["I"]  # Add import sorting
 
 [tool.ruff.lint.isort]
-known-first-party = ["knowledge_augmented_image_contrastive_clustering"]
+known-first-party = ["kaicc"]
 force-sort-within-sections = true
 
