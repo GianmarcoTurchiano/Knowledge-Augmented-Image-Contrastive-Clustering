@@ -1,0 +1,66 @@
+schema: '2.0'
+stages:
+  filtering:
+    cmd: python -m kaicc.filter --input_triples_file data/raw/triples.csv --output_triples_file
+      data/processed/triples.csv --output_labels_file data/interim/labels.csv
+    deps:
+    - path: data/raw/triples.csv
+      hash: md5
+      md5: d3d798c0961095359b12cd66a6044eca
+      size: 70522438
+    - path: kaicc/filter.py
+      hash: md5
+      md5: 0e38a5a89cf410e53a5559a2974c9b6e
+      size: 1352
+    outs:
+    - path: data/interim/labels.csv
+      hash: md5
+      md5: dc54916f8318f0e1b331976dea612c2c
+      size: 9097263
+    - path: data/processed/triples.csv
+      hash: md5
+      md5: 336c8c1cedac476637eae0b08ab5f440
+      size: 52514134
+  preprocessing:
+    cmd: python -m kaicc.preprocess --input_triples_file data/raw/triples.csv --input_images_archive
+      data/raw/images.tar.gz --output_triples_file data/processed/triples.csv --output_labels_file
+      data/processed/labels.csv --output_images_directory data/processed/images
+    deps:
+    - path: data/raw/images.tar.gz
+      hash: md5
+      md5: 0c051fb68a3f64e50fb2d4652c9bf9da
+      size: 1856987749
+    - path: data/raw/triples.csv
+      hash: md5
+      md5: d3d798c0961095359b12cd66a6044eca
+      size: 70522438
+    - path: kaicc/preprocess.py
+      hash: md5
+      md5: 839c5dc9be2a127244fc214cabf8b1ce
+      size: 1815
+    outs:
+    - path: data/processed/labels.csv
+      hash: md5
+      md5: 53d4c740e1ce5e1bdb220bd92fc1b7e8
+      size: 9097263
+    - path: data/processed/triples.csv
+      hash: md5
+      md5: 15b9b9b31ea335a9fafff720e83a615a
+      size: 47061844
+  node_texts_generation:
+    cmd: python -m kaicc.generate_node_texts --input_triples_file data/processed/triples.csv
+      --output_node_texts_file data/processed/node_texts.csv
+    deps:
+    - path: data/processed/triples.csv
+      hash: md5
+      md5: 15b9b9b31ea335a9fafff720e83a615a
+      size: 47061844
+    - path: kaicc/generate_node_texts.py
+      hash: md5
+      md5: d7ee457412d5df6879a19fb907edbed2
+      size: 1250
+    outs:
+    - path: data/processed/node_texts.csv
+      hash: md5
+      md5: dacbb0efaf4efc3caa4f75022fe5e822
+      size: 1357207

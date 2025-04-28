@@ -1,0 +1,25 @@
+stages:
+  preprocessing:
+    cmd: python -m kaicc.preprocess
+      --input_triples_file ${triples.path.all}
+      --input_images_archive ${images.path.archive}
+      --output_triples_file ${triples.path.filtered}
+      --output_labels_file ${labels.path.all}
+      --output_images_directory ${images.path.directory}
+    deps:
+    - kaicc/preprocess.py
+    - ${triples.path.all}
+    - ${images.path.archive}
+    outs:
+    - ${triples.path.filtered}
+    - ${labels.path.all}
+
+  node_texts_generation:
+    cmd: python -m kaicc.generate_node_texts
+      --input_triples_file ${triples.path.filtered}
+      --output_node_texts_file ${triples.path.nodes.texts}
+    deps:
+    - kaicc/generate_node_texts.py
+    - ${triples.path.filtered}
+    outs:
+    - ${triples.path.nodes.texts}

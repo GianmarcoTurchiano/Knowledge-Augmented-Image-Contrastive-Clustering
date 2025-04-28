@@ -1,0 +1,5 @@
+outs:
+- md5: d3d798c0961095359b12cd66a6044eca
+  size: 70522438
+  hash: md5
+  path: triples.csv

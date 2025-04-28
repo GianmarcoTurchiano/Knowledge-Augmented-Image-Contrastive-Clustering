@@ -1,0 +1,18 @@
+random:
+  seed: 42
+
+triples:
+  path:
+    all: 'data/raw/triples.csv'
+    filtered: 'data/processed/triples.csv'
+    nodes:
+      texts: 'data/processed/node_texts.csv'
+
+labels:
+  path:
+    all: 'data/processed/labels.csv'
+
+images:
+  path:
+    archive: 'data/raw/images.tar.gz'
+    directory: 'data/processed/images'
