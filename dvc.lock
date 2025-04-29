@@ -22,9 +22,10 @@ stages:
       md5: 336c8c1cedac476637eae0b08ab5f440
       size: 52514134
   preprocessing:
-    cmd: python -m kaicc.preprocess --input_triples_file data/raw/triples.csv --input_images_archive
-      data/raw/images.tar.gz --output_triples_file data/processed/triples.csv --output_labels_file
-      data/processed/labels.csv --output_images_directory data/processed/images
+    cmd: python -m kaicc.preprocess --input_triples_file_path data/raw/triples.csv
+      --input_images_archive data/raw/images.tar.gz --output_triples_file_path data/processed/triples.csv
+      --output_labels_file_path data/interim/labels.csv --output_images_directory
+      data/processed/images
     deps:
     - path: data/raw/images.tar.gz
       hash: md5
@@ -36,31 +37,54 @@ stages:
       size: 70522438
     - path: kaicc/preprocess.py
       hash: md5
-      md5: 839c5dc9be2a127244fc214cabf8b1ce
-      size: 1815
+      md5: 14c622b05075b5dddd634b147b05f095
+      size: 1942
     outs:
-    - path: data/processed/labels.csv
+    - path: data/interim/labels.csv
       hash: md5
-      md5: 53d4c740e1ce5e1bdb220bd92fc1b7e8
+      md5: 3e76c6deef586b1cfc531e26faf298a6
       size: 9097263
     - path: data/processed/triples.csv
       hash: md5
-      md5: 15b9b9b31ea335a9fafff720e83a615a
-      size: 47061844
+      md5: ceb07f08415ab5ffea6fd9efd678121b
+      size: 47070166
   node_texts_generation:
-    cmd: python -m kaicc.generate_node_texts --input_triples_file data/processed/triples.csv
-      --output_node_texts_file data/processed/node_texts.csv
+    cmd: python -m kaicc.generate_node_texts --input_triples_file_path data/processed/triples.csv
+      --output_node_texts_file_path data/processed/entities_texts.csv
     deps:
     - path: data/processed/triples.csv
       hash: md5
-      md5: 15b9b9b31ea335a9fafff720e83a615a
-      size: 47061844
+      md5: ceb07f08415ab5ffea6fd9efd678121b
+      size: 47070166
     - path: kaicc/generate_node_texts.py
       hash: md5
-      md5: d7ee457412d5df6879a19fb907edbed2
-      size: 1250
+      md5: 7764274afb0413dc2e37e34684cbd6e4
+      size: 1263
     outs:
-    - path: data/processed/node_texts.csv
+    - path: data/processed/entities_texts.csv
       hash: md5
-      md5: dacbb0efaf4efc3caa4f75022fe5e822
-      size: 1357207
+      md5: 7397d85997da92be086d6efe988b91fb
+      size: 1358022
+  labels_splitting:
+    cmd: python -m kaicc.split_labels --input_labels_file_path data/interim/labels.csv
+      --output_pretraining_labels_file_path data/interim/pretraining_labels.csv --output_clustering_labels_file_path
+      data/processed/clustering_labels.csv --pretraining_labels_ratio 0.2 --random_seed
+      42
+    deps:
+    - path: data/interim/labels.csv
+      hash: md5
+      md5: 3e76c6deef586b1cfc531e26faf298a6
+      size: 9097263
+    - path: kaicc/split_labels.py
+      hash: md5
+      md5: 5af1359ff00450b2178b148c54a8e169
+      size: 879
+    outs:
+    - path: data/interim/pretraining_labels.csv
+      hash: md5
+      md5: cfcdea28bf22c7e8bbcd449857695861
+      size: 1819183
+    - path: data/processed/clustering_labels.csv
+      hash: md5
+      md5: c95c6ebc657ff71df8cf3811a4ce1bc5
+      size: 7278120

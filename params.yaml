@@ -5,12 +5,23 @@ triples:
   path:
     all: 'data/raw/triples.csv'
     filtered: 'data/processed/triples.csv'
-    nodes:
-      texts: 'data/processed/node_texts.csv'
+
+texts:
+  path:
+    entities: 'data/processed/entities_texts.csv' 
 
 labels:
+  ratio:
+    pretraining_to_all: 0.2
+    validation_to_pretraining: 0.2 
   path:
-    all: 'data/processed/labels.csv'
+    all: 'data/interim/labels.csv'
+    pretraining:
+      all: 'data/interim/pretraining_labels.csv'
+      train: 'data/processed/pretraining_train_labels.csv'
+      validation: 'data/processed/pretraining_validation_labels.csv'
+    clustering:
+      all: 'data/processed/clustering_labels.csv'
 
 images:
   path:
