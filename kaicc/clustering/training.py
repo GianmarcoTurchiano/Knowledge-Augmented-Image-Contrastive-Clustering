@@ -1,17 +1,16 @@
 import torch
 import torch.optim as optim
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset
 from tqdm.autonotebook import tqdm
 from sklearn.metrics import normalized_mutual_info_score, adjusted_rand_score
 
 from kaicc.clustering.modules.loss import ContrastiveClusteringLoss
-from kaicc.clustering.modules.dataset import ContrastiveDataset
 from kaicc.clustering.modules.model import ContrastiveClusteringModel
 
 
 def train(
     model: ContrastiveClusteringModel,
-    dataset: ContrastiveDataset,
+    dataset: Dataset,
     epochs_count: int,
     learning_rate: float,
     batch_size: int,
@@ -49,12 +48,12 @@ def train(
         predictions_b = []
 
         for pic_a, pic_b, label in tqdm(loader, desc="Training", leave=False):
-            pic_a, pic_b = pic_a.to(device), pic_b.to(device)
+            inputs_a, inputs_b = model.backbone.preprocess(pic_a, pic_b)
+            inputs_a, inputs_b = inputs_a.to(device), inputs_b.to(device)
 
             optimizer.zero_grad()
 
-            emb_a, logits_a = model(pic_a)
-            emb_b, logits_b = model(pic_b)
+            emb_a, logits_a, emb_b, logits_b = model.contrastive_forward(inputs_a, inputs_b)
             
             (
                 loss_embeddings,
