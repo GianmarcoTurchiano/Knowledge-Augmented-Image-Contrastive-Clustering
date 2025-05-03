@@ -2,14 +2,11 @@ stages:
   preprocessing:
     cmd: python -m kaicc.preprocess
       --input_triples_file_path ${triples.path.all}
-      --input_images_archive ${images.path.archive}
       --output_triples_file_path ${triples.path.filtered}
       --output_labels_file_path ${labels.path.all}
-      --output_images_directory ${images.path.directory}
     deps:
     - kaicc/preprocess.py
     - ${triples.path.all}
-    - ${images.path.archive}
     outs:
     - ${triples.path.filtered}
     - ${labels.path.all}
@@ -37,3 +34,37 @@ stages:
     outs:
     - ${labels.path.pretraining.all}
     - ${labels.path.clustering.all}
+
+  image_vs_image_clustering:
+    cmd: python -m kaicc.cluster_image_vs_image
+      --image_archive_path ${images.path.archive}
+      --image_directory_path ${images.path.directory}
+      --labels_file_path ${labels.path.clustering.all}
+      --output_run_id_path ${run_id.file_path.image_vs_image}
+      --clip_base_model_name ${training.clip_base_model_name}
+      --random_seed ${random.seed}
+      --clusters_count ${training.clusters_count}
+      --embeddings_dimension ${training.embeddings_dimension}
+      --epochs_count ${training.epochs_count}
+      --learning_rate ${training.learning_rate}
+      --batch_size ${training.batch_size}
+      --regularization_strength ${training.regularization_strength}
+      --temperature_embeddings ${training.temperature_embeddings}
+      --temperature_clusters ${training.temperature_clusters}
+      --size ${transform.size}
+      --mean ${transform.mean}
+      --std ${transform.std}
+      --scale ${transform.scale}
+      --brightness ${transform.brightness}
+      --contrast ${transform.contrast}
+      --saturation ${transform.saturation}
+      --hue ${transform.hue}
+      --p_color_jitter ${transform.p_color_jitter}
+      --p_gray_scale ${transform.p_gray_scale}
+      --p_gaussian_blur ${transform.p_gaussian_blur}
+      --sigma ${transform.sigma}
+    deps:
+    - kaicc/cluster_image_vs_image.py
+    - ${images.path.archive}
+    outs:
+    - ${run_id.file_path.image_vs_image}

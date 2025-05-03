@@ -8,8 +8,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--input_triples_file_path', type=str)
-    parser.add_argument('--input_images_archive', type=str)
-    parser.add_argument('--output_images_directory', type=str)
     parser.add_argument('--output_triples_file_path', type=str)
     parser.add_argument('--output_labels_file_path', type=str)
 
@@ -50,6 +48,3 @@ if __name__ == '__main__':
     df_labels['Genre_idx'] = pd.factorize(df_labels['Genre'])[0]
 
     df_labels.to_csv(args.output_labels_file_path, index=False)
-
-    #with tarfile.open(args.input_images_archive, "r:gz") as tar:
-    #    tar.extractall(args.output_images_directory)

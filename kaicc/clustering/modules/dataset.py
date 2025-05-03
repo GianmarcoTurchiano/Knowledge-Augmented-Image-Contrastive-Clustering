@@ -1,23 +1,62 @@
+from math import ceil
+import tarfile
+
 import torchvision.transforms as transforms
 from torch.utils.data import Dataset
 from PIL import Image
 import pandas as pd
 
 
-test_transform = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.ToTensor(),
-])
+def _get_standardization(
+    mean=[0.48145466, 0.4578275, 0.40821073],
+    std=[0.26862954, 0.26130258, 0.27577711]
+):
+    return transforms.Normalize(
+        mean=mean,
+        std=std
+    )
 
 
-train_transform = transforms.Compose([
-    transforms.RandomResizedCrop(224, scale=(0.2, 1.0)),
-    transforms.RandomApply([transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)], p=0.8),
-    transforms.RandomGrayscale(p=0.2),
-    transforms.RandomHorizontalFlip(),
-    # For small images such as CIFAR-10, one might leave out GaussianBlur.
-    transforms.ToTensor(),
-])
+def get_transform(
+    mean=[0.48145466, 0.4578275, 0.40821073],
+    std=[0.26862954, 0.26130258, 0.27577711],
+    size=224,
+):
+    standardization = _get_standardization(mean, std)
+
+    return transforms.Compose([
+        transforms.Resize(size),
+        transforms.ToTensor(),
+        standardization
+    ])
+
+
+def get_augmented_transform(
+    mean=[0.48145466, 0.4578275, 0.40821073],
+    std=[0.26862954, 0.26130258, 0.27577711],
+    size=224,
+    scale=(0.2, 1.0),
+    brightness=0.4,
+    contrast=0.4,
+    saturation=0.4,
+    hue=0.1,
+    p_color_jitter=0.8,
+    p_gray_scale=0.2,
+    p_gaussian_blur=0.5,
+    sigma=(0.1, 2.0),
+):
+    standardization = _get_standardization(mean, std)
+    kernel_size = ceil((10.0 * float(size)) / 100.0)
+
+    return transforms.Compose([
+        transforms.RandomResizedCrop(size, scale=scale),
+        transforms.RandomApply([transforms.ColorJitter(brightness, contrast, saturation, hue)], p=p_color_jitter),
+        transforms.RandomGrayscale(p=p_gray_scale),
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomApply([transforms.GaussianBlur(kernel_size=kernel_size, sigma=sigma)], p=p_gaussian_blur),
+        transforms.ToTensor(),
+        standardization
+    ])
 
 
 class DoubleTransform:
@@ -31,20 +70,23 @@ class DoubleTransform:
 class ArtworkDataset(Dataset):
     def __init__(
         self,
-        image_directory,
+        image_archive_path,
+        image_directory_path,
         labels_file_path,
         transform=None
     ):
-        self.image_directory = image_directory
+        self.image_directory = image_directory_path
         self.df = pd.read_csv(labels_file_path)
         
         self.transform = transform
 
         if self.transform == None:
             self.transform = transforms.Compose([
-                #transforms.Resize((224, 224)),
                 transforms.ToTensor()
             ])
+
+        with tarfile.open(image_archive_path, "r:gz") as tar:
+            tar.extractall(image_directory_path)
 
     def __len__(self):
         return len(self.df)
@@ -64,12 +106,14 @@ class ArtworkDataset(Dataset):
 class ArtworkVsArtworkDataset(Dataset):
     def __init__(
         self,
-        image_directory,
+        image_archive_path,
+        image_directory_path,
         labels_file_path,
         transform
     ):
         self.dataset = ArtworkDataset(
-            image_directory,
+            image_archive_path,
+            image_directory_path,
             labels_file_path,
             DoubleTransform(transform)
         )

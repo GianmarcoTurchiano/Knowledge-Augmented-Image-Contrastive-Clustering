@@ -16,9 +16,9 @@ class Head(nn.Module):
         return y
 
 
-class CLIPWrapper(nn.Module):
+class _CLIPEmbedder(nn.Module):
     def __init__(self, base_model_name):
-        super(CLIPWrapper, self).__init__()
+        super(_CLIPEmbedder, self).__init__()
         self.model = CLIPModel.from_pretrained(base_model_name)
         self.processor = CLIPProcessor.from_pretrained(base_model_name)
 
@@ -53,7 +53,7 @@ class CLIPWrapper(nn.Module):
         pass
 
 
-class CLIPWrapperRaw(CLIPWrapper):
+class CLIPEmbedderRaw(_CLIPEmbedder):
     def forward_image(self, inputs):
         embedding = self.model.vision_model(**inputs)
         return embedding
@@ -69,7 +69,7 @@ class CLIPWrapperRaw(CLIPWrapper):
         return self.model.text_projection.in_features
 
 
-class CLIPWrapperProjected(CLIPWrapper):
+class CLIPEmbedderProjected(_CLIPEmbedder):
     def forward_image(self, inputs):
         embedding = self.model.get_image_features(**inputs)
         return embedding
@@ -85,9 +85,9 @@ class CLIPWrapperProjected(CLIPWrapper):
         return self.model.text_projection.out_features
 
 
-class CLIPMainToAuxWrapper(nn.Module):
-    def __init__(self, clip: CLIPWrapper):
-        super(CLIPMainToAuxWrapper, self).__init__()
+class _CLIPMainToAuxWrapper(nn.Module):
+    def __init__(self, clip: _CLIPEmbedder):
+        super(_CLIPMainToAuxWrapper, self).__init__()
         self.clip = clip
 
     def get_main_embeddings_dimension(self):
@@ -109,7 +109,7 @@ class CLIPMainToAuxWrapper(nn.Module):
         pass
 
 
-class CLIPImageToTextWrapper(CLIPMainToAuxWrapper):
+class CLIPImageMainToTextAuxWrapper(_CLIPMainToAuxWrapper):
     def get_main_embeddings_dimension(self):
         return self.clip.get_image_embeddings_dimension()
     
@@ -129,16 +129,16 @@ class CLIPImageToTextWrapper(CLIPMainToAuxWrapper):
         return self.clip.preprocess_text(data)
 
 
-class CLIPBackbone(nn.Module):
-    def __init__(self, clip: CLIPMainToAuxWrapper):
-        super(CLIPBackbone, self).__init__()
+class _CLIPBackbone(nn.Module):
+    def __init__(self, clip: _CLIPMainToAuxWrapper):
+        super(_CLIPBackbone, self).__init__()
         self.clip = clip
 
     def preprocess(self, data_a, data_b):
         pass
 
 
-class CLIPMainVsAuxBackbone(CLIPBackbone):
+class CLIPMainVsAuxBackbone(_CLIPBackbone):
     def forward(self, inputs_main, inputs_auxiliary):
         embedding_main = self.clip.main_forward(inputs_main)
         embedding_auxiliary = self.clip.auxiliary_forward(inputs_auxiliary)
@@ -150,7 +150,7 @@ class CLIPMainVsAuxBackbone(CLIPBackbone):
         return inputs_main, inputs_auxiliary
 
 
-class CLIPMainVsMainBackbone(CLIPBackbone):
+class CLIPMainVsMainBackbone(_CLIPBackbone):
     def forward(self, inputs_a, inputs_b):
         embedding_a = self.clip.main_forward(inputs_a)
         embedding_b = self.clip.main_forward(inputs_b)
@@ -165,7 +165,7 @@ class CLIPMainVsMainBackbone(CLIPBackbone):
 class ContrastiveClusteringModel(nn.Module):
     def __init__(
         self,
-        backbone: CLIPBackbone,
+        backbone: _CLIPBackbone,
         num_clusters: int,
         embeddings_dimension: int
     ):
@@ -211,7 +211,7 @@ class ContrastiveClusteringModel(nn.Module):
 class ContrastiveClusteringModelAux(ContrastiveClusteringModel):
     def __init__(
         self,
-        backbone: CLIPMainToAuxWrapper,
+        backbone: _CLIPMainToAuxWrapper,
         num_clusters: int,
         embeddings_dimension: int
     ):

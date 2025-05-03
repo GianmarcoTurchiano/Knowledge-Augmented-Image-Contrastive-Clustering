@@ -1,8 +1,13 @@
+import random
+import os
+
+import numpy as np
 import torch
 import torch.optim as optim
 from torch.utils.data import DataLoader, Dataset
 from tqdm.autonotebook import tqdm
 from sklearn.metrics import normalized_mutual_info_score, adjusted_rand_score
+import mlflow
 
 from kaicc.clustering.modules.loss import ContrastiveClusteringLoss
 from kaicc.clustering.modules.model import ContrastiveClusteringModel
@@ -16,8 +21,18 @@ def train(
     batch_size: int,
     regularization_strength: float,
     temperature_embeddings: float,
-    temperature_clusters: float
+    temperature_clusters: float,
+    random_seed: int
 ):
+    random.seed(random_seed)
+    np.random.seed(random_seed)
+    torch.manual_seed(random_seed)
+    torch.cuda.manual_seed_all(random_seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+    torch.use_deterministic_algorithms(True, warn_only=True)
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     model = model.to(device)
@@ -43,12 +58,13 @@ def train(
         epoch_loss_clusters = 0.0
         epoch_batch_wise_clusters_entropy = 0.0
 
-        labels = []
+        styles = []
+        genres = []
         predictions_a = []
         predictions_b = []
 
-        for pic_a, pic_b, label in tqdm(loader, desc="Training", leave=False):
-            inputs_a, inputs_b = model.backbone.preprocess(pic_a, pic_b)
+        for data_a, data_b, style, genre in tqdm(loader, desc="Training", leave=False):
+            inputs_a, inputs_b = model.backbone.preprocess(data_a, data_b)
             inputs_a, inputs_b = inputs_a.to(device), inputs_b.to(device)
 
             optimizer.zero_grad()
@@ -74,7 +90,8 @@ def train(
             predictions_a.append(pred_a.cpu())
             pred_b = torch.argmax(logits_b, dim=1)
             predictions_b.append(pred_b.cpu())
-            labels.append(label)
+            styles.append(style)
+            genres.append(genre)
 
         epoch_loss_total_avg = epoch_loss_total / n_samples
         epoch_loss_embeddings_avg = epoch_loss_embeddings / n_samples
@@ -83,14 +100,22 @@ def train(
 
         predictions_a = torch.cat(predictions_a, dim=0).numpy()
         predictions_b = torch.cat(predictions_b, dim=0).numpy()
-        labels = torch.cat(labels, dim=0).numpy()
+        styles = torch.cat(styles, dim=0).numpy()
+        genres = torch.cat(genres, dim=0).numpy()
 
-        nmi_a = normalized_mutual_info_score(labels, predictions_a)
-        nmi_b = normalized_mutual_info_score(labels, predictions_b)
-        nmi_avg = (nmi_a + nmi_b) / 2
-        ari_a = adjusted_rand_score(labels, predictions_a)
-        ari_b = adjusted_rand_score(labels, predictions_b)
-        ari_avg = (ari_a + ari_b) / 2
+        nmi_style_a = normalized_mutual_info_score(styles, predictions_a)
+        nmi_style_b = normalized_mutual_info_score(styles, predictions_b)
+        nmi_style_avg = (nmi_style_a + nmi_style_b) / 2
+        ari_style_a = adjusted_rand_score(styles, predictions_a)
+        ari_style_b = adjusted_rand_score(styles, predictions_b)
+        ari_style_avg = (ari_style_a + ari_style_b) / 2
+
+        nmi_genre_a = normalized_mutual_info_score(genres, predictions_a)
+        nmi_genre_b = normalized_mutual_info_score(genres, predictions_b)
+        nmi_genre_avg = (nmi_genre_a + nmi_genre_b) / 2
+        ari_genre_a = adjusted_rand_score(genres, predictions_a)
+        ari_genre_b = adjusted_rand_score(genres, predictions_b)
+        ari_genre_avg = (ari_genre_a + ari_genre_b) / 2
 
         tqdm.write(f"EPOCH {epoch+1}\n"
             f"Loss: {epoch_loss_total_avg:.4f}\n"
@@ -98,9 +123,41 @@ def train(
                 f"\tClusters: {epoch_loss_clusters_avg:.4f}\n"
                     f"\t\tH[E(p)]: {epoch_batch_wise_clusters_entropy_avg:.4f} / {loss_fn.uniform_clusters_entropy.item():.4f} nats\n"
             f"Metrics:\n"
-                f"\tNormalized Mutual Information (avg. {nmi_avg})\n"
-                    f"\t\tView A: {nmi_a:.4f}\n"
-                    f"\t\tView B: {nmi_b:.4f}\n"
-                f"\tAdjusted Rand Score (avg. {ari_avg})\n"
-                    f"\t\tView A: {ari_a:.4f}\n"
-                    f"\t\tView B: {ari_b:.4f}\n")
+                f"\tStyle\n"                
+                    f"\t\tNormalized Mutual Information (avg. {nmi_style_avg})\n"
+                        f"\t\t\tView A: {nmi_style_a:.4f}\n"
+                        f"\t\t\tView B: {nmi_style_b:.4f}\n"
+                    f"\t\tAdjusted Rand Score (avg. {ari_style_avg})\n"
+                        f"\t\t\tView A: {ari_style_a:.4f}\n"
+                        f"\t\t\tView B: {ari_style_b:.4f}\n"
+                f"\tGenre\n"                
+                    f"\t\tNormalized Mutual Information (avg. {nmi_genre_avg})\n"
+                        f"\t\t\tView A: {nmi_genre_a:.4f}\n"
+                        f"\t\t\tView B: {nmi_genre_b:.4f}\n"
+                    f"\t\tAdjusted Rand Score (avg. {ari_genre_avg})\n"
+                        f"\t\t\tView A: {ari_genre_a:.4f}\n"
+                        f"\t\t\tView B: {ari_genre_b:.4f}\n")
+
+        mlflow.log_metric("Loss Total", epoch_loss_total_avg, step=epoch)
+        mlflow.log_metric("Loss Embeddings", epoch_loss_embeddings_avg, step=epoch)
+        mlflow.log_metric("Loss Clusters", epoch_loss_clusters_avg, step=epoch)
+        mlflow.log_metric("Batch-wise Entropy", epoch_batch_wise_clusters_entropy_avg, step=epoch)
+
+        mlflow.log_metric("Style NMI Avg.", nmi_style_avg, step=epoch)
+        mlflow.log_metric("Style NMI View A", nmi_style_a, step=epoch)
+        mlflow.log_metric("Style NMI View B", nmi_style_b, step=epoch)
+
+        mlflow.log_metric("Style ARI Avg.", ari_style_avg, step=epoch)
+        mlflow.log_metric("Style ARI View A", ari_style_a, step=epoch)
+        mlflow.log_metric("Style ARI View B", ari_style_b, step=epoch)
+
+        mlflow.log_metric("Genre NMI Avg.", nmi_genre_avg, step=epoch)
+        mlflow.log_metric("Genre NMI View A", nmi_genre_a, step=epoch)
+        mlflow.log_metric("Genre NMI View B", nmi_genre_b, step=epoch)
+
+        mlflow.log_metric("Genre ARI Avg.", ari_genre_avg, step=epoch)
+        mlflow.log_metric("Genre ARI View A", ari_genre_a, step=epoch)
+        mlflow.log_metric("Genre ARI View B", ari_genre_b, step=epoch)
+
+    model = model.to('cpu')
+    mlflow.pytorch.log_model(model, model.__name__)
