@@ -52,8 +52,6 @@ stages:
       --temperature_embeddings ${training.temperature_embeddings}
       --temperature_clusters ${training.temperature_clusters}
       --size ${transform.size}
-      --mean ${transform.mean}
-      --std ${transform.std}
       --scale ${transform.scale}
       --brightness ${transform.brightness}
       --contrast ${transform.contrast}
@@ -66,5 +64,6 @@ stages:
     deps:
     - kaicc/cluster_image_vs_image.py
     - ${images.path.archive}
+    - ${labels.path.clustering.all}
     outs:
     - ${run_id.file_path.image_vs_image}

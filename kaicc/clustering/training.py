@@ -28,10 +28,6 @@ def train(
     np.random.seed(random_seed)
     torch.manual_seed(random_seed)
     torch.cuda.manual_seed_all(random_seed)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-    os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
-    torch.use_deterministic_algorithms(True, warn_only=True)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -63,8 +59,7 @@ def train(
         predictions_a = []
         predictions_b = []
 
-        for data_a, data_b, style, genre in tqdm(loader, desc="Training", leave=False):
-            inputs_a, inputs_b = model.backbone.preprocess(data_a, data_b)
+        for inputs_a, inputs_b, style, genre in tqdm(loader, desc="Training", leave=False):
             inputs_a, inputs_b = inputs_a.to(device), inputs_b.to(device)
 
             optimizer.zero_grad()

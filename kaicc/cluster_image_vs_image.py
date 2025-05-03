@@ -1,10 +1,7 @@
 import argparse
 
 from dotenv import load_dotenv
-from kaicc.clustering.training import (
-    train,
-    f
-)
+from kaicc.clustering.training import train
 from kaicc.clustering.modules.dataset import (
     ArtworkVsArtworkDataset,
     get_augmented_transform
@@ -39,8 +36,6 @@ if __name__ == '__main__':
     parser.add_argument('--temperature_embeddings', type=float)
     parser.add_argument('--temperature_clusters', type=float)
 
-    parser.add_argument('--mean', nargs=3, type=float)
-    parser.add_argument('--std', nargs=3, type=float)
     parser.add_argument('--size', type=int)
     parser.add_argument('--scale', nargs=2, type=float)
     parser.add_argument('--brightness', type=float)
@@ -66,8 +61,6 @@ if __name__ == '__main__':
     )
 
     train_transform = get_augmented_transform(
-        mean=args.mean,
-        std=args.std,
         size=args.size,
         scale=tuple(args.scale),
         brightness=args.brightness,
@@ -80,6 +73,7 @@ if __name__ == '__main__':
         sigma=tuple(args.sigma),
     )
     dataset = ArtworkVsArtworkDataset(
+        embedder.processor,
         args.image_archive_path,
         args.image_directory_path,
         args.labels_file_path,
@@ -97,8 +91,6 @@ if __name__ == '__main__':
         mlflow.log_param("regularization_strength", args.regularization_strength)
         mlflow.log_param("temperature_embeddings", args.temperature_embeddings)
         mlflow.log_param("temperature_clusters", args.temperature_clusters)
-        mlflow.log_param("mean", str(args.mean))
-        mlflow.log_param("std", str(args.std))
         mlflow.log_param("size", args.size)
         mlflow.log_param("scale", str(args.scale))
         mlflow.log_param("brightness", args.brightness)

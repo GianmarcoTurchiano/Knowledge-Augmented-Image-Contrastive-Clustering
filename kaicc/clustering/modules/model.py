@@ -20,14 +20,14 @@ class _CLIPEmbedder(nn.Module):
     def __init__(self, base_model_name):
         super(_CLIPEmbedder, self).__init__()
         self.model = CLIPModel.from_pretrained(base_model_name)
-        self.processor = CLIPProcessor.from_pretrained(base_model_name)
+        self.processor = CLIPProcessor.from_pretrained(base_model_name, use_fast=False)
 
     def preprocess_image(self, image):
         inputs = self.processor(
             images=image,
             return_tensors="pt",
             padding=True,
-            do_rescale=False
+            do_rescale=True
         )
         return inputs
     
@@ -36,7 +36,6 @@ class _CLIPEmbedder(nn.Module):
             text=text,
             return_tensors="pt",
             padding=True,
-            do_rescale=False
         )
         return inputs
     

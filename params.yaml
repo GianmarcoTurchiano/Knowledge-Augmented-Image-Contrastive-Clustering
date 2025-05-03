@@ -4,14 +4,12 @@ training:
   embeddings_dimension: 128
   epochs_count: 200
   learning_rate: 3e-4
-  batch_size: 128
+  batch_size: 64
   regularization_strength: 1.0
   temperature_clusters: 1.0
   temperature_embeddings: 0.5
 
 transform:
-  mean: '0.48145466 0.4578275 0.40821073'
-  std: '0.26862954 0.26130258 0.27577711'
   size: 224
   scale: 0.2 1.0
   brightness: 0.4

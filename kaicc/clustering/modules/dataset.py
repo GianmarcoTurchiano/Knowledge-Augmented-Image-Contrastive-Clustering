@@ -1,39 +1,19 @@
 from math import ceil
 import tarfile
 
+from transformers import CLIPProcessor
 import torchvision.transforms as transforms
 from torch.utils.data import Dataset
 from PIL import Image
 import pandas as pd
 
-
-def _get_standardization(
-    mean=[0.48145466, 0.4578275, 0.40821073],
-    std=[0.26862954, 0.26130258, 0.27577711]
-):
-    return transforms.Normalize(
-        mean=mean,
-        std=std
-    )
-
-
-def get_transform(
-    mean=[0.48145466, 0.4578275, 0.40821073],
-    std=[0.26862954, 0.26130258, 0.27577711],
-    size=224,
-):
-    standardization = _get_standardization(mean, std)
-
+def get_transform(size=224):
     return transforms.Compose([
-        transforms.Resize(size),
-        transforms.ToTensor(),
-        standardization
+        transforms.Resize(size)
     ])
 
 
 def get_augmented_transform(
-    mean=[0.48145466, 0.4578275, 0.40821073],
-    std=[0.26862954, 0.26130258, 0.27577711],
     size=224,
     scale=(0.2, 1.0),
     brightness=0.4,
@@ -45,7 +25,6 @@ def get_augmented_transform(
     p_gaussian_blur=0.5,
     sigma=(0.1, 2.0),
 ):
-    standardization = _get_standardization(mean, std)
     kernel_size = ceil((10.0 * float(size)) / 100.0)
 
     return transforms.Compose([
@@ -54,8 +33,6 @@ def get_augmented_transform(
         transforms.RandomGrayscale(p=p_gray_scale),
         transforms.RandomHorizontalFlip(),
         transforms.RandomApply([transforms.GaussianBlur(kernel_size=kernel_size, sigma=sigma)], p=p_gaussian_blur),
-        transforms.ToTensor(),
-        standardization
     ])
 
 
@@ -106,11 +83,14 @@ class ArtworkDataset(Dataset):
 class ArtworkVsArtworkDataset(Dataset):
     def __init__(
         self,
-        image_archive_path,
-        image_directory_path,
-        labels_file_path,
+        processor: CLIPProcessor,
+        image_archive_path: str,
+        image_directory_path: str,
+        labels_file_path: str,
         transform
     ):
+        self.processor = processor
+
         self.dataset = ArtworkDataset(
             image_archive_path,
             image_directory_path,
@@ -123,7 +103,25 @@ class ArtworkVsArtworkDataset(Dataset):
 
     def __getitem__(self, index):
         (image_a, image_b), style, genre = self.dataset[index]
-        return image_a, image_b, style, genre
+
+        inputs_a = self.processor(
+            images=image_a,
+            return_tensors="pt",
+            padding=True,
+            do_rescale=True
+        )
+
+        inputs_b = self.processor(
+            images=image_b,
+            return_tensors="pt",
+            padding=True,
+            do_rescale=True
+        )
+
+        inputs_a["pixel_values"] = inputs_a["pixel_values"].squeeze(0)
+        inputs_b["pixel_values"] = inputs_b["pixel_values"].squeeze(0)
+
+        return inputs_a, inputs_b, style, genre
 
 
 class ArtworkVsCaptionDataset(Dataset):

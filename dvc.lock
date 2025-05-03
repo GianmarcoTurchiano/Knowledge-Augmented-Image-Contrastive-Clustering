@@ -23,22 +23,17 @@ stages:
       size: 52514134
   preprocessing:
     cmd: python -m kaicc.preprocess --input_triples_file_path data/raw/triples.csv
-      --input_images_archive data/raw/images.tar.gz --output_triples_file_path data/processed/triples.csv
-      --output_labels_file_path data/interim/labels.csv --output_images_directory
-      data/processed/images
+      --output_triples_file_path data/processed/triples.csv --output_labels_file_path
+      data/interim/labels.csv
     deps:
-    - path: data/raw/images.tar.gz
-      hash: md5
-      md5: 0c051fb68a3f64e50fb2d4652c9bf9da
-      size: 1856987749
     - path: data/raw/triples.csv
       hash: md5
       md5: d3d798c0961095359b12cd66a6044eca
       size: 70522438
     - path: kaicc/preprocess.py
       hash: md5
-      md5: 14c622b05075b5dddd634b147b05f095
-      size: 1942
+      md5: 26162391f93b1b93275d95679b0c4b5b
+      size: 1698
     outs:
     - path: data/interim/labels.csv
       hash: md5
