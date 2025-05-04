@@ -22,6 +22,25 @@ class _CLIPEmbedder(nn.Module):
         self.model = CLIPModel.from_pretrained(base_model_name)
         self.processor = CLIPProcessor.from_pretrained(base_model_name, use_fast=False)
 
+    def freeze(self):
+        for param in self.model.parameters():
+            param.requires_grad = False
+
+    def unfreeze_last_vision_layer(self):
+        for param in self.model.vision_model.encoder.layers[-1].parameters():
+            param.requires_grad = True
+
+        for param in self.model.visual_projection.parameters():
+            param.requires_grad = True
+
+    def unfreeze_last_text_layer(self):
+        for param in self.model.text_model.encoder.layers[-1].parameters():
+            param.requires_grad = True
+
+        for param in self.model.text_projection.parameters():
+            param.requires_grad = True
+
+
     def preprocess_image(self, image):
         inputs = self.processor(
             images=image,

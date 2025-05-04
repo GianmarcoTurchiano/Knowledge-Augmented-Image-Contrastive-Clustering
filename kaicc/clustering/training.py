@@ -1,5 +1,5 @@
 import random
-import os
+import copy
 
 import numpy as np
 import torch
@@ -22,12 +22,14 @@ def train(
     regularization_strength: float,
     temperature_embeddings: float,
     temperature_clusters: float,
+    patience: int,
     random_seed: int
 ):
     random.seed(random_seed)
     np.random.seed(random_seed)
     torch.manual_seed(random_seed)
     torch.cuda.manual_seed_all(random_seed)
+    torch.multiprocessing.set_sharing_strategy('file_system')
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -47,6 +49,10 @@ def train(
     n_samples = len(loader)
 
     model.train()
+
+    epoch_loss_total_avg_best = float('Inf')
+    model_best_state = copy.deepcopy(model.state_dict())
+    epochs_no_improvement = 0
 
     for epoch in tqdm(range(epochs_count), desc="Epochs"):
         epoch_loss_total = 0.0
@@ -154,5 +160,18 @@ def train(
         mlflow.log_metric("Genre ARI View A", ari_genre_a, step=epoch)
         mlflow.log_metric("Genre ARI View B", ari_genre_b, step=epoch)
 
+        if epoch_loss_total_avg < epoch_loss_total_avg_best:
+            epochs_no_improvement = 0
+            epoch_loss_total_avg_best = epoch_loss_total_avg
+            model_best_state = copy.deepcopy(model.state_dict())
+        else:
+            tqdm.write(f'Epochs without improvements: {epochs_no_improvement}')
+            epochs_no_improvement += 1
+
+        if epochs_no_improvement >= patience:
+            tqdm.write(f'Early stopping triggered after {epochs_no_improvement} with no improvements.')
+            break
+
+    model.load_state_dict(model_best_state)
     model = model.to('cpu')
     mlflow.pytorch.log_model(model, model.__name__)

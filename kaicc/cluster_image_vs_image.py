@@ -25,6 +25,7 @@ if __name__ == '__main__':
     parser.add_argument('--output_run_id_path', type=str)
 
     parser.add_argument('--random_seed', type=int)
+    parser.add_argument('--patience', type=int)
     
     parser.add_argument('--clusters_count', type=int)
     parser.add_argument('--embeddings_dimension', type=int)
@@ -52,6 +53,8 @@ if __name__ == '__main__':
     load_dotenv()
 
     embedder = CLIPEmbedderProjected(args.clip_base_model_name)
+    embedder.freeze()
+    embedder.unfreeze_last_vision_layer()
     wrapper = CLIPImageMainToTextAuxWrapper(embedder)
     backbone = CLIPMainVsMainBackbone(wrapper)
     model = ContrastiveClusteringModel(
@@ -111,6 +114,7 @@ if __name__ == '__main__':
             args.regularization_strength,
             args.temperature_embeddings,
             args.temperature_clusters,
+            args.patience,
             args.random_seed
         )
 
