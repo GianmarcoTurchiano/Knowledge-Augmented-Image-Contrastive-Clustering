@@ -55,3 +55,4 @@ images:
 run_id:
   file_path:
     image_vs_image: 'models/image_vs_image.txt'
+    image_vs_image_raw: 'models/image_vs_image_raw.txt'
