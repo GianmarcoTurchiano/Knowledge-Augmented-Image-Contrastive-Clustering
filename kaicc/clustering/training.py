@@ -4,18 +4,19 @@ import copy
 import numpy as np
 import torch
 import torch.optim as optim
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader
 from tqdm.autonotebook import tqdm
 from sklearn.metrics import normalized_mutual_info_score, adjusted_rand_score
 import mlflow
 
+from kaicc.clustering.modules.dataset import _ArtworkVsDataset
 from kaicc.clustering.modules.loss import ContrastiveClusteringLoss
 from kaicc.clustering.modules.model import ContrastiveClusteringModel
 
 
 def train(
     model: ContrastiveClusteringModel,
-    dataset: Dataset,
+    dataset: _ArtworkVsDataset,
     epochs_count: int,
     learning_rate: float,
     batch_size: int,
@@ -139,26 +140,29 @@ def train(
                         f"\t\t\tView A: {ari_genre_a:.4f}\n"
                         f"\t\t\tView B: {ari_genre_b:.4f}\n")
 
-        mlflow.log_metric("Loss Total", epoch_loss_total_avg, step=epoch)
-        mlflow.log_metric("Loss Embeddings", epoch_loss_embeddings_avg, step=epoch)
-        mlflow.log_metric("Loss Clusters", epoch_loss_clusters_avg, step=epoch)
-        mlflow.log_metric("Batch-wise Entropy", epoch_batch_wise_clusters_entropy_avg, step=epoch)
+        try:
+            mlflow.log_metric("Loss Total", epoch_loss_total_avg, step=epoch)
+            mlflow.log_metric("Loss Embeddings", epoch_loss_embeddings_avg, step=epoch)
+            mlflow.log_metric("Loss Clusters", epoch_loss_clusters_avg, step=epoch)
+            mlflow.log_metric("Batch-wise Entropy", epoch_batch_wise_clusters_entropy_avg, step=epoch)
 
-        mlflow.log_metric("Style NMI Avg.", nmi_style_avg, step=epoch)
-        mlflow.log_metric("Style NMI View A", nmi_style_a, step=epoch)
-        mlflow.log_metric("Style NMI View B", nmi_style_b, step=epoch)
+            mlflow.log_metric("Style NMI Avg.", nmi_style_avg, step=epoch)
+            mlflow.log_metric("Style NMI View A", nmi_style_a, step=epoch)
+            mlflow.log_metric("Style NMI View B", nmi_style_b, step=epoch)
 
-        mlflow.log_metric("Style ARI Avg.", ari_style_avg, step=epoch)
-        mlflow.log_metric("Style ARI View A", ari_style_a, step=epoch)
-        mlflow.log_metric("Style ARI View B", ari_style_b, step=epoch)
+            mlflow.log_metric("Style ARI Avg.", ari_style_avg, step=epoch)
+            mlflow.log_metric("Style ARI View A", ari_style_a, step=epoch)
+            mlflow.log_metric("Style ARI View B", ari_style_b, step=epoch)
 
-        mlflow.log_metric("Genre NMI Avg.", nmi_genre_avg, step=epoch)
-        mlflow.log_metric("Genre NMI View A", nmi_genre_a, step=epoch)
-        mlflow.log_metric("Genre NMI View B", nmi_genre_b, step=epoch)
+            mlflow.log_metric("Genre NMI Avg.", nmi_genre_avg, step=epoch)
+            mlflow.log_metric("Genre NMI View A", nmi_genre_a, step=epoch)
+            mlflow.log_metric("Genre NMI View B", nmi_genre_b, step=epoch)
 
-        mlflow.log_metric("Genre ARI Avg.", ari_genre_avg, step=epoch)
-        mlflow.log_metric("Genre ARI View A", ari_genre_a, step=epoch)
-        mlflow.log_metric("Genre ARI View B", ari_genre_b, step=epoch)
+            mlflow.log_metric("Genre ARI Avg.", ari_genre_avg, step=epoch)
+            mlflow.log_metric("Genre ARI View A", ari_genre_a, step=epoch)
+            mlflow.log_metric("Genre ARI View B", ari_genre_b, step=epoch)
+        except:
+            tqdm.write(f"No internet connection, metrics were not logged to MLflow for epoch {epoch}.")
 
         if epoch_loss_total_avg < epoch_loss_total_avg_best:
             epochs_no_improvement = 0
@@ -174,4 +178,4 @@ def train(
 
     model.load_state_dict(model_best_state)
     model = model.to('cpu')
-    mlflow.pytorch.log_model(model, model.__name__)
+    mlflow.pytorch.log_model(model, model.__class__.__name__)

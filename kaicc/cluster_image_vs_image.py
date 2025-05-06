@@ -57,11 +57,7 @@ if __name__ == '__main__':
     embedder.unfreeze_last_vision_layer()
     wrapper = CLIPImageMainToTextAuxWrapper(embedder)
     backbone = CLIPMainVsMainBackbone(wrapper)
-    model = ContrastiveClusteringModel(
-        backbone,
-        args.clusters_count,
-        args.embeddings_dimension
-    )
+    model = ContrastiveClusteringModel(backbone, args.clusters_count, args.embeddings_dimension)
 
     train_transform = get_augmented_transform(
         size=args.size,
@@ -76,7 +72,7 @@ if __name__ == '__main__':
         sigma=tuple(args.sigma),
     )
     dataset = ArtworkVsArtworkDataset(
-        embedder.processor,
+        args.clip_base_model_name,
         args.image_archive_path,
         args.image_directory_path,
         args.labels_file_path,

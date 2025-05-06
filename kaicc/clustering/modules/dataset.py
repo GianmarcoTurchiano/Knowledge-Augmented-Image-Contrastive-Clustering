@@ -58,9 +58,7 @@ class ArtworkDataset(Dataset):
         self.transform = transform
 
         if self.transform == None:
-            self.transform = transforms.Compose([
-                transforms.ToTensor()
-            ])
+            self.transform = transforms.ToTensor()
 
         with tarfile.open(image_archive_path, "r:gz") as tar:
             tar.extractall(image_directory_path)
@@ -80,26 +78,44 @@ class ArtworkDataset(Dataset):
         return image, style, genre
 
 
-class ArtworkVsArtworkDataset(Dataset):
+class _ArtworkVsDataset(Dataset):
     def __init__(
         self,
-        processor: CLIPProcessor,
+        base_model_name: str,
         image_archive_path: str,
         image_directory_path: str,
         labels_file_path: str,
         transform
     ):
-        self.processor = processor
+        self.processor = CLIPProcessor.from_pretrained(base_model_name, use_fast=False)
 
         self.dataset = ArtworkDataset(
             image_archive_path,
             image_directory_path,
             labels_file_path,
-            DoubleTransform(transform)
+            transform
         )
     
     def __len__(self):
-        return len(self.dataset)
+        return len(self.dataset)    
+
+
+class ArtworkVsArtworkDataset(_ArtworkVsDataset):
+    def __init__(
+        self,
+        base_model_name: str,
+        image_archive_path: str,
+        image_directory_path: str,
+        labels_file_path: str,
+        transform
+    ):
+        super().__init__(
+            base_model_name,
+            image_archive_path,
+            image_directory_path,
+            labels_file_path,
+            DoubleTransform(transform)
+        )
 
     def __getitem__(self, index):
         (image_a, image_b), style, genre = self.dataset[index]
@@ -124,9 +140,46 @@ class ArtworkVsArtworkDataset(Dataset):
         return inputs_a, inputs_b, style, genre
 
 
-class ArtworkVsCaptionDataset(Dataset):
-    pass
+class ArtworkVsCaptionDataset(_ArtworkVsDataset):
+    def __init__(
+        self,
+        base_model_name: str,
+        image_archive_path: str,
+        image_directory_path: str,
+        labels_file_path: str,
+        transform,
+        captions_file_path: str
+    ):
+        super().__init__(
+            base_model_name,
+            image_archive_path,
+            image_directory_path,
+            labels_file_path,
+            transform
+        )
 
+        self.captions_df = pd.read_csv(captions_file_path)
 
-class AugmentedArtworkVsArtworkDataset(ArtworkVsArtworkDataset):
-    pass
+    def __getitem__(self, index):
+        image, style, genre = self.dataset[index]
+
+        image_inputs = self.processor(
+            images=image,
+            return_tensors="pt",
+            padding=True,
+            do_rescale=True
+        )
+
+        image_inputs["pixel_values"] = image_inputs["pixel_values"].squeeze(0)
+
+        caption = self.captions_df.loc[index]['Caption']
+
+        caption_inputs = self.processor(
+            text=caption,
+            return_tensors="pt",
+            padding=True,
+        )
+
+        caption_inputs["input_ids"] = caption_inputs["input_ids"].squeeze(0)
+
+        return image_inputs, caption_inputs, style, genre
