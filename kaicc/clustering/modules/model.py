@@ -1,5 +1,5 @@
 import torch.nn as nn
-from transformers import CLIPModel, CLIPProcessor
+from transformers import CLIPModel
 
 
 class Head(nn.Module):
@@ -164,7 +164,7 @@ class ContrastiveClusteringModel(nn.Module):
         in_emb = self.backbone.clip.main_forward(inputs)
         out_emb, logits = self._main_projection(in_emb)
         return out_emb, logits
-    
+
     def auxiliary_forward(self, inputs):
         in_emb = self.backbone.clip.auxiliary_forward(inputs)
         out_emb, logits = self._auxiliary_projection(in_emb)
@@ -192,7 +192,7 @@ class ContrastiveClusteringModelAux(ContrastiveClusteringModel):
         super(ContrastiveClusteringModelAux, self).__init__(backbone, num_clusters, embeddings_dimension)
 
         backbone_auxiliary_embeddings_dimension = self.backbone.clip.get_auxiliary_embeddings_dimension()        
-         
+
         self.inst_head_auxiliary = Head(in_dim=backbone_auxiliary_embeddings_dimension, out_dim=embeddings_dimension)
         self.clust_head_auxiliary = Head(in_dim=backbone_auxiliary_embeddings_dimension, out_dim=num_clusters)
 
