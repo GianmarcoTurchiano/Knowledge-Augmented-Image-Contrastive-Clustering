@@ -48,6 +48,8 @@ labels:
       all: 'data/processed/clustering_labels.csv'
 
 images:
+  captions:
+    path: 'data/processed/captions.csv'
   path:
     archive: 'data/raw/images.tar.gz'
     directory: 'data/processed/images'
@@ -56,3 +58,7 @@ run_id:
   file_path:
     image_vs_image: 'models/image_vs_image.txt'
     image_vs_image_raw: 'models/image_vs_image_raw.txt'
+    image_vs_text: 'models/image_vs_text.txt'
+    transformed_image_vs_text: 'models/transformed_image_vs_text.txt'
+    image_vs_text_raw: 'models/image_vs_text_raw.txt'
+    transformed_image_vs_text_raw: 'models/transformed_image_vs_text_raw.txt'

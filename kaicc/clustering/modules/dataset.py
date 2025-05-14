@@ -147,8 +147,8 @@ class ArtworkVsCaptionDataset(_ArtworkVsDataset):
         image_archive_path: str,
         image_directory_path: str,
         labels_file_path: str,
-        transform,
-        captions_file_path: str
+        captions_file_path: str,
+        transform=None,
     ):
         super().__init__(
             base_model_name,

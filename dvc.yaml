@@ -26,7 +26,7 @@ stages:
       --image_archive_path ${images.path.archive}
       --image_directory_path ${images.path.directory}
       --labels_file_path ${labels.path.clustering.all}
-      --output_run_id_path ${run_id.file_path.image_vs_image}
+      --output_run_id_path ${run_id.file_path.image_vs_image_raw}
       --clip_base_model_name ${training.clip_base_model_name}
       --random_seed ${random.seed}
       --patience ${training.patience}
@@ -88,3 +88,129 @@ stages:
     - ${labels.path.clustering.all}
     outs:
     - ${run_id.file_path.image_vs_image}
+
+  image_vs_text_clustering:
+    cmd: python -m kaicc.cluster_image_vs_text
+      --image_archive_path ${images.path.archive}
+      --image_directory_path ${images.path.directory}
+      --labels_file_path ${labels.path.clustering.all}
+      --captions_file_path ${images.captions.path}
+      --output_run_id_path ${run_id.file_path.image_vs_text}
+      --clip_base_model_name ${training.clip_base_model_name}
+      --random_seed ${random.seed}
+      --patience ${training.patience}
+      --clusters_count ${training.clusters_count}
+      --embeddings_dimension ${training.embeddings_dimension}
+      --epochs_count ${training.epochs_count}
+      --learning_rate ${training.learning_rate}
+      --batch_size ${training.batch_size}
+      --regularization_strength ${training.regularization_strength}
+      --temperature_embeddings ${training.temperature_embeddings}
+      --temperature_clusters ${training.temperature_clusters}
+      --size ${transform.size}
+    deps:
+    - kaicc/cluster_image_vs_text.py
+    - ${images.path.archive}
+    - ${labels.path.clustering.all}
+    - ${images.captions.path}
+    outs:
+    - ${run_id.file_path.image_vs_text}
+
+  image_vs_text_raw_clustering:
+    cmd: python -m kaicc.cluster_image_vs_text_raw
+      --image_archive_path ${images.path.archive}
+      --image_directory_path ${images.path.directory}
+      --labels_file_path ${labels.path.clustering.all}
+      --captions_file_path ${images.captions.path}
+      --output_run_id_path ${run_id.file_path.image_vs_text_raw}
+      --clip_base_model_name ${training.clip_base_model_name}
+      --random_seed ${random.seed}
+      --patience ${training.patience}
+      --clusters_count ${training.clusters_count}
+      --embeddings_dimension ${training.embeddings_dimension}
+      --epochs_count ${training.epochs_count}
+      --learning_rate ${training.learning_rate}
+      --batch_size ${training.batch_size}
+      --regularization_strength ${training.regularization_strength}
+      --temperature_embeddings ${training.temperature_embeddings}
+      --temperature_clusters ${training.temperature_clusters}
+      --size ${transform.size}
+    deps:
+    - kaicc/cluster_image_vs_text_raw.py
+    - ${images.path.archive}
+    - ${labels.path.clustering.all}
+    - ${images.captions.path}
+    outs:
+    - ${run_id.file_path.image_vs_text_raw}
+
+  transformed_image_vs_text_clustering:
+    cmd: python -m kaicc.cluster_transformed_image_vs_text
+      --image_archive_path ${images.path.archive}
+      --image_directory_path ${images.path.directory}
+      --labels_file_path ${labels.path.clustering.all}
+      --captions_file_path ${images.captions.path}
+      --output_run_id_path ${run_id.file_path.transformed_image_vs_text}
+      --clip_base_model_name ${training.clip_base_model_name}
+      --random_seed ${random.seed}
+      --patience ${training.patience}
+      --clusters_count ${training.clusters_count}
+      --embeddings_dimension ${training.embeddings_dimension}
+      --epochs_count ${training.epochs_count}
+      --learning_rate ${training.learning_rate}
+      --batch_size ${training.batch_size}
+      --regularization_strength ${training.regularization_strength}
+      --temperature_embeddings ${training.temperature_embeddings}
+      --temperature_clusters ${training.temperature_clusters}
+      --size ${transform.size}
+      --scale ${transform.scale}
+      --brightness ${transform.brightness}
+      --contrast ${transform.contrast}
+      --saturation ${transform.saturation}
+      --hue ${transform.hue}
+      --p_color_jitter ${transform.p_color_jitter}
+      --p_gray_scale ${transform.p_gray_scale}
+      --p_gaussian_blur ${transform.p_gaussian_blur}
+      --sigma ${transform.sigma}
+    deps:
+    - kaicc/cluster_transformed_image_vs_text.py
+    - ${images.path.archive}
+    - ${labels.path.clustering.all}
+    - ${images.captions.path}
+    outs:
+    - ${run_id.file_path.transformed_image_vs_text}
+
+  transformed_image_vs_text_raw_clustering:
+    cmd: python -m kaicc.cluster_transformed_image_vs_text_raw
+      --image_archive_path ${images.path.archive}
+      --image_directory_path ${images.path.directory}
+      --labels_file_path ${labels.path.clustering.all}
+      --captions_file_path ${images.captions.path}
+      --output_run_id_path ${run_id.file_path.transformed_image_vs_text_raw}
+      --clip_base_model_name ${training.clip_base_model_name}
+      --random_seed ${random.seed}
+      --patience ${training.patience}
+      --clusters_count ${training.clusters_count}
+      --embeddings_dimension ${training.embeddings_dimension}
+      --epochs_count ${training.epochs_count}
+      --learning_rate ${training.learning_rate}
+      --batch_size ${training.batch_size}
+      --regularization_strength ${training.regularization_strength}
+      --temperature_embeddings ${training.temperature_embeddings}
+      --temperature_clusters ${training.temperature_clusters}
+      --size ${transform.size}
+      --scale ${transform.scale}
+      --brightness ${transform.brightness}
+      --contrast ${transform.contrast}
+      --saturation ${transform.saturation}
+      --hue ${transform.hue}
+      --p_color_jitter ${transform.p_color_jitter}
+      --p_gray_scale ${transform.p_gray_scale}
+      --p_gaussian_blur ${transform.p_gaussian_blur}
+      --sigma ${transform.sigma}
+    deps:
+    - kaicc/cluster_transformed_image_vs_text_raw.py
+    - ${images.path.archive}
+    - ${labels.path.clustering.all}
+    - ${images.captions.path}
+    outs:
+    - ${run_id.file_path.transformed_image_vs_text_raw}

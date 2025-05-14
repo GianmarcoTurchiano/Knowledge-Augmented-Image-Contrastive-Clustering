@@ -24,7 +24,7 @@ stages:
   preprocessing:
     cmd: python -m kaicc.preprocess --input_triples_file_path data/raw/triples.csv
       --output_triples_file_path data/processed/triples.csv --output_labels_file_path
-      data/interim/labels.csv
+      data/processed/clustering_labels.csv
     deps:
     - path: data/raw/triples.csv
       hash: md5
@@ -35,7 +35,7 @@ stages:
       md5: 26162391f93b1b93275d95679b0c4b5b
       size: 1698
     outs:
-    - path: data/interim/labels.csv
+    - path: data/processed/clustering_labels.csv
       hash: md5
       md5: 3e76c6deef586b1cfc531e26faf298a6
       size: 9097263
@@ -83,3 +83,57 @@ stages:
       hash: md5
       md5: c95c6ebc657ff71df8cf3811a4ce1bc5
       size: 7278120
+  image_vs_image_raw_clustering:
+    cmd: python -m kaicc.cluster_image_vs_image_raw --image_archive_path data/raw/images.tar.gz
+      --image_directory_path data/processed/images --labels_file_path data/processed/clustering_labels.csv
+      --output_run_id_path models/image_vs_image_raw.txt --clip_base_model_name openai/clip-vit-base-patch32
+      --random_seed 42 --patience 3 --clusters_count 10 --embeddings_dimension 128
+      --epochs_count 200 --learning_rate 0.0003 --batch_size 512 --regularization_strength
+      1.0 --temperature_embeddings 0.5 --temperature_clusters 1.0 --size 224 --scale
+      0.2 1.0 --brightness 0.4 --contrast 0.4 --saturation 0.4 --hue 0.1 --p_color_jitter
+      0.8 --p_gray_scale 0.2 --p_gaussian_blur 0.5 --sigma 0.1 2.0
+    deps:
+    - path: data/processed/clustering_labels.csv
+      hash: md5
+      md5: 3e76c6deef586b1cfc531e26faf298a6
+      size: 9097263
+    - path: data/raw/images.tar.gz
+      hash: md5
+      md5: 0c051fb68a3f64e50fb2d4652c9bf9da
+      size: 1856987749
+    - path: kaicc/cluster_image_vs_image_raw.py
+      hash: md5
+      md5: 38dc63cbb3aa5ab24ccb3367dd70cb96
+      size: 4534
+    outs:
+    - path: models/image_vs_image_raw.txt
+      hash: md5
+      md5: 203939da6ba04a63a4db78d59ec4571e
+      size: 32
+  image_vs_image_clustering:
+    cmd: python -m kaicc.cluster_image_vs_image --image_archive_path data/raw/images.tar.gz
+      --image_directory_path data/processed/images --labels_file_path data/processed/clustering_labels.csv
+      --output_run_id_path models/image_vs_image.txt --clip_base_model_name openai/clip-vit-base-patch32
+      --random_seed 42 --patience 3 --clusters_count 10 --embeddings_dimension 128
+      --epochs_count 200 --learning_rate 0.0003 --batch_size 512 --regularization_strength
+      1.0 --temperature_embeddings 0.5 --temperature_clusters 1.0 --size 224 --scale
+      0.2 1.0 --brightness 0.4 --contrast 0.4 --saturation 0.4 --hue 0.1 --p_color_jitter
+      0.8 --p_gray_scale 0.2 --p_gaussian_blur 0.5 --sigma 0.1 2.0
+    deps:
+    - path: data/processed/clustering_labels.csv
+      hash: md5
+      md5: 3e76c6deef586b1cfc531e26faf298a6
+      size: 9097263
+    - path: data/raw/images.tar.gz
+      hash: md5
+      md5: 0c051fb68a3f64e50fb2d4652c9bf9da
+      size: 1856987749
+    - path: kaicc/cluster_image_vs_image.py
+      hash: md5
+      md5: 9088cc77db7b8fb9157feb440accac8d
+      size: 4542
+    outs:
+    - path: models/image_vs_image.txt
+      hash: md5
+      md5: bf55d8e9761704cb26a3c308aea6bc99
+      size: 32
