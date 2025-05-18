@@ -137,3 +137,282 @@ stages:
       hash: md5
       md5: bf55d8e9761704cb26a3c308aea6bc99
       size: 32
+  image_vs_text_clustering:
+    cmd: python -m kaicc.cluster_image_vs_text --image_archive_path data/raw/images.tar.gz
+      --image_directory_path data/processed/images --labels_file_path data/processed/clustering_labels.csv
+      --captions_file_path data/processed/captions.csv --output_run_id_path models/image_vs_text.txt
+      --clip_base_model_name openai/clip-vit-base-patch32 --random_seed 42 --patience
+      3 --clusters_count 10 --embeddings_dimension 128 --epochs_count 200 --learning_rate
+      0.0003 --batch_size 512 --regularization_strength 1.0 --temperature_embeddings
+      0.5 --temperature_clusters 1.0 --size 224
+    deps:
+    - path: data/processed/captions.csv
+      hash: md5
+      md5: 4fd622419e8e35df930cb78356c9caf2
+      size: 40456760
+    - path: data/processed/clustering_labels.csv
+      hash: md5
+      md5: 3e76c6deef586b1cfc531e26faf298a6
+      size: 9097263
+    - path: data/raw/images.tar.gz
+      hash: md5
+      md5: 0c051fb68a3f64e50fb2d4652c9bf9da
+      size: 1856987749
+    - path: kaicc/cluster_image_vs_text.py
+      hash: md5
+      md5: 355fda45f458af72c481eece9cb7e39d
+      size: 3293
+    outs:
+    - path: models/image_vs_text.txt
+      hash: md5
+      md5: c635514ab4cc580cf6e622f51ac05da9
+      size: 32
+  image_vs_text_raw_clustering:
+    cmd: python -m kaicc.cluster_image_vs_text_raw --image_archive_path data/raw/images.tar.gz
+      --image_directory_path data/processed/images --labels_file_path data/processed/clustering_labels.csv
+      --captions_file_path data/processed/captions.csv --output_run_id_path models/image_vs_text_raw.txt
+      --clip_base_model_name openai/clip-vit-base-patch32 --random_seed 42 --patience
+      3 --clusters_count 10 --embeddings_dimension 128 --epochs_count 200 --learning_rate
+      0.0003 --batch_size 512 --regularization_strength 1.0 --temperature_embeddings
+      0.5 --temperature_clusters 1.0 --size 224
+    deps:
+    - path: data/processed/captions.csv
+      hash: md5
+      md5: 4fd622419e8e35df930cb78356c9caf2
+      size: 40456760
+    - path: data/processed/clustering_labels.csv
+      hash: md5
+      md5: 3e76c6deef586b1cfc531e26faf298a6
+      size: 9097263
+    - path: data/raw/images.tar.gz
+      hash: md5
+      md5: 0c051fb68a3f64e50fb2d4652c9bf9da
+      size: 1856987749
+    - path: kaicc/cluster_image_vs_text_raw.py
+      hash: md5
+      md5: 27c436c04803a47bae32928920513b62
+      size: 3303
+    outs:
+    - path: models/image_vs_text_raw.txt
+      hash: md5
+      md5: 1c508a0af929fdce6ff09a1106ba5d42
+      size: 32
+  transformed_image_vs_text_clustering:
+    cmd: python -m kaicc.cluster_transformed_image_vs_text --image_archive_path data/raw/images.tar.gz
+      --image_directory_path data/processed/images --labels_file_path data/processed/clustering_labels.csv
+      --captions_file_path data/processed/captions.csv --output_run_id_path models/transformed_image_vs_text.txt
+      --clip_base_model_name openai/clip-vit-base-patch32 --random_seed 42 --patience
+      3 --clusters_count 10 --embeddings_dimension 128 --epochs_count 200 --learning_rate
+      0.0003 --batch_size 512 --regularization_strength 1.0 --temperature_embeddings
+      0.5 --temperature_clusters 1.0 --size 224 --scale 0.2 1.0 --brightness 0.4 --contrast
+      0.4 --saturation 0.4 --hue 0.1 --p_color_jitter 0.8 --p_gray_scale 0.2 --p_gaussian_blur
+      0.5 --sigma 0.1 2.0
+    deps:
+    - path: data/processed/captions.csv
+      hash: md5
+      md5: 4fd622419e8e35df930cb78356c9caf2
+      size: 40456760
+    - path: data/processed/clustering_labels.csv
+      hash: md5
+      md5: 3e76c6deef586b1cfc531e26faf298a6
+      size: 9097263
+    - path: data/raw/images.tar.gz
+      hash: md5
+      md5: 0c051fb68a3f64e50fb2d4652c9bf9da
+      size: 1856987749
+    - path: kaicc/cluster_transformed_image_vs_text.py
+      hash: md5
+      md5: afe57f77ffa54aff083996c4f2177ed8
+      size: 4643
+    outs:
+    - path: models/transformed_image_vs_text.txt
+      hash: md5
+      md5: 89ab78830cb5c57337e9d4b7f846d1b2
+      size: 32
+  transformed_image_vs_text_raw_clustering:
+    cmd: python -m kaicc.cluster_transformed_image_vs_text_raw --image_archive_path
+      data/raw/images.tar.gz --image_directory_path data/processed/images --labels_file_path
+      data/processed/clustering_labels.csv --captions_file_path data/processed/captions.csv
+      --output_run_id_path models/transformed_image_vs_text_raw.txt --clip_base_model_name
+      openai/clip-vit-base-patch32 --random_seed 42 --patience 3 --clusters_count
+      10 --embeddings_dimension 128 --epochs_count 200 --learning_rate 0.0003 --batch_size
+      512 --regularization_strength 1.0 --temperature_embeddings 0.5 --temperature_clusters
+      1.0 --size 224 --scale 0.2 1.0 --brightness 0.4 --contrast 0.4 --saturation
+      0.4 --hue 0.1 --p_color_jitter 0.8 --p_gray_scale 0.2 --p_gaussian_blur 0.5
+      --sigma 0.1 2.0
+    deps:
+    - path: data/processed/captions.csv
+      hash: md5
+      md5: 4fd622419e8e35df930cb78356c9caf2
+      size: 40456760
+    - path: data/processed/clustering_labels.csv
+      hash: md5
+      md5: 3e76c6deef586b1cfc531e26faf298a6
+      size: 9097263
+    - path: data/raw/images.tar.gz
+      hash: md5
+      md5: 0c051fb68a3f64e50fb2d4652c9bf9da
+      size: 1856987749
+    - path: kaicc/cluster_transformed_image_vs_text_raw.py
+      hash: md5
+      md5: 8e14c0ab3b9f5bb570ab151636fcd01c
+      size: 4653
+    outs:
+    - path: models/transformed_image_vs_text_raw.txt
+      hash: md5
+      md5: d2e4046b4c5efdbf692b3edb17fe676f
+      size: 32
+  transformed_image_vs_transformed_image_evaluation:
+    cmd: python -m kaicc.evaluate --random_seed 42 --run_id_path models/image_vs_image.txt
+      --size 224 --image_archive_path data/raw/images.tar.gz --image_directory_path
+      data/processed/images --labels_file_path data/processed/clustering_labels.csv
+      --batch_size 512
+    deps:
+    - path: data/processed/captions.csv
+      hash: md5
+      md5: 4fd622419e8e35df930cb78356c9caf2
+      size: 40456760
+    - path: data/raw/images.tar.gz
+      hash: md5
+      md5: 0c051fb68a3f64e50fb2d4652c9bf9da
+      size: 1856987749
+    - path: kaicc/evaluate.py
+      hash: md5
+      md5: 47649ac9e6890b106cf0ea52fe264cbc
+      size: 4753
+    - path: models/image_vs_image.txt
+      hash: md5
+      md5: bf55d8e9761704cb26a3c308aea6bc99
+      size: 32
+  transformed_image_vs_transformed_image_single_projection_evaluation:
+    cmd: python -m kaicc.evaluate --random_seed 42 --run_id_path models/image_vs_image.txt
+      --size 224 --image_archive_path data/raw/images.tar.gz --image_directory_path
+      data/processed/images --labels_file_path data/processed/clustering_labels.csv
+      --batch_size 512
+    deps:
+    - path: data/processed/clustering_labels.csv
+      hash: md5
+      md5: 3e76c6deef586b1cfc531e26faf298a6
+      size: 9097263
+    - path: data/raw/images.tar.gz
+      hash: md5
+      md5: 0c051fb68a3f64e50fb2d4652c9bf9da
+      size: 1856987749
+    - path: kaicc/evaluate.py
+      hash: md5
+      md5: 5e31b6a23809e7896e609f3888a7e850
+      size: 4753
+    - path: models/image_vs_image.txt
+      hash: md5
+      md5: bf55d8e9761704cb26a3c308aea6bc99
+      size: 32
+  transformed_image_vs_transformed_image_raw_single_projection_evaluation:
+    cmd: python -m kaicc.evaluate --random_seed 42 --run_id_path models/image_vs_image_raw.txt
+      --size 224 --image_archive_path data/raw/images.tar.gz --image_directory_path
+      data/processed/images --labels_file_path data/processed/clustering_labels.csv
+      --batch_size 512
+    deps:
+    - path: data/processed/clustering_labels.csv
+      hash: md5
+      md5: 3e76c6deef586b1cfc531e26faf298a6
+      size: 9097263
+    - path: data/raw/images.tar.gz
+      hash: md5
+      md5: 0c051fb68a3f64e50fb2d4652c9bf9da
+      size: 1856987749
+    - path: kaicc/evaluate.py
+      hash: md5
+      md5: 5e31b6a23809e7896e609f3888a7e850
+      size: 4753
+    - path: models/image_vs_image_raw.txt
+      hash: md5
+      md5: 203939da6ba04a63a4db78d59ec4571e
+      size: 32
+  image_vs_text_single_projection_evaluation:
+    cmd: python -m kaicc.evaluate --random_seed 42 --run_id_path models/image_vs_text.txt
+      --size 224 --image_archive_path data/raw/images.tar.gz --image_directory_path
+      data/processed/images --labels_file_path data/processed/clustering_labels.csv
+      --batch_size 512
+    deps:
+    - path: data/processed/clustering_labels.csv
+      hash: md5
+      md5: 3e76c6deef586b1cfc531e26faf298a6
+      size: 9097263
+    - path: data/raw/images.tar.gz
+      hash: md5
+      md5: 0c051fb68a3f64e50fb2d4652c9bf9da
+      size: 1856987749
+    - path: kaicc/evaluate.py
+      hash: md5
+      md5: 5e31b6a23809e7896e609f3888a7e850
+      size: 4753
+    - path: models/image_vs_text.txt
+      hash: md5
+      md5: c635514ab4cc580cf6e622f51ac05da9
+      size: 32
+  image_vs_text_raw_double_projection_evaluation:
+    cmd: python -m kaicc.evaluate --random_seed 42 --run_id_path models/image_vs_text_raw.txt
+      --size 224 --image_archive_path data/raw/images.tar.gz --image_directory_path
+      data/processed/images --labels_file_path data/processed/clustering_labels.csv
+      --batch_size 512
+    deps:
+    - path: data/processed/clustering_labels.csv
+      hash: md5
+      md5: 3e76c6deef586b1cfc531e26faf298a6
+      size: 9097263
+    - path: data/raw/images.tar.gz
+      hash: md5
+      md5: 0c051fb68a3f64e50fb2d4652c9bf9da
+      size: 1856987749
+    - path: kaicc/evaluate.py
+      hash: md5
+      md5: 5e31b6a23809e7896e609f3888a7e850
+      size: 4753
+    - path: models/image_vs_text_raw.txt
+      hash: md5
+      md5: 1c508a0af929fdce6ff09a1106ba5d42
+      size: 32
+  transformed_image_vs_text_single_projection_evaluation:
+    cmd: python -m kaicc.evaluate --random_seed 42 --run_id_path models/transformed_image_vs_text.txt
+      --size 224 --image_archive_path data/raw/images.tar.gz --image_directory_path
+      data/processed/images --labels_file_path data/processed/clustering_labels.csv
+      --batch_size 512
+    deps:
+    - path: data/processed/clustering_labels.csv
+      hash: md5
+      md5: 3e76c6deef586b1cfc531e26faf298a6
+      size: 9097263
+    - path: data/raw/images.tar.gz
+      hash: md5
+      md5: 0c051fb68a3f64e50fb2d4652c9bf9da
+      size: 1856987749
+    - path: kaicc/evaluate.py
+      hash: md5
+      md5: 5e31b6a23809e7896e609f3888a7e850
+      size: 4753
+    - path: models/transformed_image_vs_text.txt
+      hash: md5
+      md5: 89ab78830cb5c57337e9d4b7f846d1b2
+      size: 32
+  transformed_image_vs_text_raw_double_projection_evaluation:
+    cmd: python -m kaicc.evaluate --random_seed 42 --run_id_path models/transformed_image_vs_text_raw.txt
+      --size 224 --image_archive_path data/raw/images.tar.gz --image_directory_path
+      data/processed/images --labels_file_path data/processed/clustering_labels.csv
+      --batch_size 512
+    deps:
+    - path: data/processed/clustering_labels.csv
+      hash: md5
+      md5: 3e76c6deef586b1cfc531e26faf298a6
+      size: 9097263
+    - path: data/raw/images.tar.gz
+      hash: md5
+      md5: 0c051fb68a3f64e50fb2d4652c9bf9da
+      size: 1856987749
+    - path: kaicc/evaluate.py
+      hash: md5
+      md5: 5e31b6a23809e7896e609f3888a7e850
+      size: 4753
+    - path: models/transformed_image_vs_text_raw.txt
+      hash: md5
+      md5: d2e4046b4c5efdbf692b3edb17fe676f
+      size: 32

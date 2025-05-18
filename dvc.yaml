@@ -214,3 +214,93 @@ stages:
     - ${images.captions.path}
     outs:
     - ${run_id.file_path.transformed_image_vs_text_raw}
+
+  transformed_image_vs_transformed_image_single_projection_evaluation:
+    cmd: python -m kaicc.evaluate
+      --random_seed ${random.seed}
+      --run_id_path ${run_id.file_path.image_vs_image}
+      --size ${transform.size}
+      --image_archive_path ${images.path.archive}
+      --image_directory_path ${images.path.directory}
+      --labels_file_path ${labels.path.clustering.all}
+      --batch_size ${training.batch_size}
+    deps:
+    - kaicc/evaluate.py
+    - ${run_id.file_path.image_vs_image}
+    - ${images.path.archive}
+    - ${labels.path.clustering.all}
+
+  transformed_image_vs_transformed_image_raw_single_projection_evaluation:
+    cmd: python -m kaicc.evaluate
+      --random_seed ${random.seed}
+      --run_id_path ${run_id.file_path.image_vs_image_raw}
+      --size ${transform.size}
+      --image_archive_path ${images.path.archive}
+      --image_directory_path ${images.path.directory}
+      --labels_file_path ${labels.path.clustering.all}
+      --batch_size ${training.batch_size}
+    deps:
+    - kaicc/evaluate.py
+    - ${run_id.file_path.image_vs_image_raw}
+    - ${images.path.archive}
+    - ${labels.path.clustering.all}
+
+  image_vs_text_single_projection_evaluation:
+    cmd: python -m kaicc.evaluate
+      --random_seed ${random.seed}
+      --run_id_path ${run_id.file_path.image_vs_text}
+      --size ${transform.size}
+      --image_archive_path ${images.path.archive}
+      --image_directory_path ${images.path.directory}
+      --labels_file_path ${labels.path.clustering.all}
+      --batch_size ${training.batch_size}
+    deps:
+    - kaicc/evaluate.py
+    - ${run_id.file_path.image_vs_text}
+    - ${images.path.archive}
+    - ${labels.path.clustering.all}
+
+  image_vs_text_raw_double_projection_evaluation:
+    cmd: python -m kaicc.evaluate
+      --random_seed ${random.seed}
+      --run_id_path ${run_id.file_path.image_vs_text_raw}
+      --size ${transform.size}
+      --image_archive_path ${images.path.archive}
+      --image_directory_path ${images.path.directory}
+      --labels_file_path ${labels.path.clustering.all}
+      --batch_size ${training.batch_size}
+    deps:
+    - kaicc/evaluate.py
+    - ${run_id.file_path.image_vs_text_raw}
+    - ${images.path.archive}
+    - ${labels.path.clustering.all}
+
+  transformed_image_vs_text_single_projection_evaluation:
+    cmd: python -m kaicc.evaluate
+      --random_seed ${random.seed}
+      --run_id_path ${run_id.file_path.transformed_image_vs_text}
+      --size ${transform.size}
+      --image_archive_path ${images.path.archive}
+      --image_directory_path ${images.path.directory}
+      --labels_file_path ${labels.path.clustering.all}
+      --batch_size ${training.batch_size}
+    deps:
+    - kaicc/evaluate.py
+    - ${run_id.file_path.transformed_image_vs_text}
+    - ${images.path.archive}
+    - ${labels.path.clustering.all}
+
+  transformed_image_vs_text_raw_double_projection_evaluation:
+    cmd: python -m kaicc.evaluate
+      --random_seed ${random.seed}
+      --run_id_path ${run_id.file_path.transformed_image_vs_text_raw}
+      --size ${transform.size}
+      --image_archive_path ${images.path.archive}
+      --image_directory_path ${images.path.directory}
+      --labels_file_path ${labels.path.clustering.all}
+      --batch_size ${training.batch_size}
+    deps:
+    - kaicc/evaluate.py
+    - ${run_id.file_path.transformed_image_vs_text_raw}
+    - ${images.path.archive}
+    - ${labels.path.clustering.all}

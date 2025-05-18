@@ -9,7 +9,7 @@ import pandas as pd
 
 def get_transform(size=224):
     return transforms.Compose([
-        transforms.Resize(size)
+        transforms.Resize((size, size))
     ])
 
 
@@ -177,9 +177,11 @@ class ArtworkVsCaptionDataset(_ArtworkVsDataset):
         caption_inputs = self.processor(
             text=caption,
             return_tensors="pt",
-            padding=True,
+            padding="max_length",
+            truncation=True,
         )
 
         caption_inputs["input_ids"] = caption_inputs["input_ids"].squeeze(0)
+        caption_inputs["attention_mask"] = caption_inputs["attention_mask"].squeeze(0)
 
         return image_inputs, caption_inputs, style, genre
