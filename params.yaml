@@ -1,10 +1,16 @@
+n_samples: 5
+
+random_text_slicing: 'False'
+freeze_temperature_embeddings: 'True'
+freeze_temperature_clusters: 'True'
+
 training:
   clip_base_model_name: openai/clip-vit-base-patch32
-  clusters_count: 10
+  clusters_count: 18
   embeddings_dimension: 128
-  epochs_count: 200
+  epochs_count: 1
   learning_rate: 3e-4
-  batch_size: 512
+  batch_size: 768
   regularization_strength: 1.0
   temperature_clusters: 1.0
   temperature_embeddings: 0.5
@@ -56,9 +62,9 @@ images:
 
 run_id:
   file_path:
-    image_vs_image: 'models/image_vs_image.txt'
-    image_vs_image_raw: 'models/image_vs_image_raw.txt'
-    image_vs_text: 'models/image_vs_text.txt'
-    transformed_image_vs_text: 'models/transformed_image_vs_text.txt'
-    image_vs_text_raw: 'models/image_vs_text_raw.txt'
-    transformed_image_vs_text_raw: 'models/transformed_image_vs_text_raw.txt'
+    transformed_image_vs_transformed_image_single_projection: 'models/cluster_trans_img_vs_trans_img_1_proj.txt'
+    transformed_image_vs_transformed_image_raw_single_projection: 'models/cluster_trans_img_vs_trans_img_raw_1_proj.txt'
+    image_vs_text_single_projection: 'models/img_vs_txt_1_proj.txt'
+    transformed_image_vs_text_single_projection: 'models/trans_img_vs_txt_1_proj.txt'
+    image_vs_text_raw_double_projection: 'models/image_vs_text_raw_2_proj.txt'
+    transformed_image_vs_text_raw_double_projection: 'models/trans_img_vs_txt_raw_2_proj.txt'

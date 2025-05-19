@@ -1,4 +1,5 @@
 import argparse
+import ast
 
 from dotenv import load_dotenv
 from kaicc.clustering.training import train
@@ -48,6 +49,9 @@ if __name__ == '__main__':
     parser.add_argument('--p_gaussian_blur', type=float)
     parser.add_argument('--sigma', nargs=2, type=float)
 
+    parser.add_argument('--freeze_temperature_embeddings', type=ast.literal_eval)
+    parser.add_argument('--freeze_temperature_clusters', type=ast.literal_eval)
+
     args = parser.parse_args()
 
     load_dotenv()
@@ -72,14 +76,14 @@ if __name__ == '__main__':
         sigma=tuple(args.sigma),
     )
     dataset = ArtworkVsArtworkDataset(
-        args.clip_base_model_name,
         args.image_archive_path,
         args.image_directory_path,
         args.labels_file_path,
+        train_transform,
         train_transform
     )
 
-    with mlflow.start_run(run_name="Image Vs. Image Raw") as run:
+    with mlflow.start_run(run_name="Transformed Image Vs. Transformed Image (Raw, Single Projection)") as run:
         mlflow.log_param("clip_base_model_name", args.clip_base_model_name)
         mlflow.log_param("random_seed", args.random_seed)
         mlflow.log_param("clusters_count", args.clusters_count)
@@ -99,7 +103,9 @@ if __name__ == '__main__':
         mlflow.log_param("p_color_jitter", args.p_color_jitter)
         mlflow.log_param("p_gray_scale", args.p_gray_scale)
         mlflow.log_param("p_gaussian_blur", args.p_gaussian_blur)
-        mlflow.log_param("sigma", str(args.sigma))
+        mlflow.log_param("sigma", str(args.sigma)),
+        mlflow.log_param("freeze_temperature_embeddings", args.freeze_temperature_embeddings)
+        mlflow.log_param("freeze_temperature_clusters", args.freeze_temperature_clusters)
 
         train(
             model,
@@ -111,7 +117,9 @@ if __name__ == '__main__':
             args.temperature_embeddings,
             args.temperature_clusters,
             args.patience,
-            args.random_seed
+            args.random_seed,
+            args.freeze_temperature_embeddings,
+            args.freeze_temperature_clusters
         )
 
         with open(args.output_run_id_path, 'w') as file:

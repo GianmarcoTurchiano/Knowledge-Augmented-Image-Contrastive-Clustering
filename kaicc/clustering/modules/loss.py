@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
+import numpy as np
 
 def batch_wise_entropy(probs):
     probs_avg = probs.mean(dim=0)
@@ -13,31 +13,35 @@ def batch_wise_entropy(probs):
 class NTXentLoss(nn.Module):
     def __init__(self, temperature, batch_size):
         super().__init__()
-        self._temperature = temperature
+        self._temperature_log = nn.Parameter(torch.ones([]) * np.log(1 / temperature))
         self._N = 2 * batch_size
 
-        # create pos‐mask
         pos = torch.zeros(self._N, self._N, dtype=torch.bool)
         idx = torch.arange(batch_size)
         pos[idx, idx + batch_size] = True
         pos[idx + batch_size, idx] = True
 
-        # create neg‐mask = everything except diag & positives
         eye = torch.eye(self._N, dtype=torch.bool)
         neg = ~eye & ~pos
 
-        # register as buffers so they move with .to(device), .eval(), etc.
         self.register_buffer('pos_mask', pos)
         self.register_buffer('neg_mask', neg)
 
-        # create labels = zeros of length N
         labels = torch.zeros(self._N, dtype=torch.long)
         self.register_buffer('labels', labels)
+
+    @property
+    def _temperature_exp(self):
+        return torch.exp(self._temperature_log)
+
+    @property
+    def temperature(self):
+        return 1 / self._temperature_exp.item()
 
     def forward(self, z_i, z_j):
         z = torch.cat([z_i, z_j], dim=0)
         z = F.normalize(z, dim=1)
-        sim = (z @ z.T) / self._temperature
+        sim = (z @ z.T) * self._temperature_exp
         sim = sim - sim.max(dim=1, keepdim=True).values
 
         positives = sim[self.pos_mask].view(self._N, 1)

@@ -24,7 +24,9 @@ def train(
     temperature_embeddings: float,
     temperature_clusters: float,
     patience: int,
-    random_seed: int
+    random_seed: int,
+    freeze_temperature_embeddings: bool,
+    freeze_temperature_clusters: bool
 ):
     random.seed(random_seed)
     np.random.seed(random_seed)
@@ -43,6 +45,14 @@ def train(
         batch_size=batch_size,
         clusters_count=model.clusters_count
     ).to(device)
+
+    if freeze_temperature_clusters:
+        for param in loss_fn.loss_clusters_fn.parameters():
+            param.requires_grad = False
+
+    if freeze_temperature_embeddings:
+        for param in loss_fn.loss_embeddings_fn.parameters():
+            param.requires_grad = False
 
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=True, num_workers=4)
@@ -66,7 +76,8 @@ def train(
         predictions_a = []
         predictions_b = []
 
-        for inputs_a, inputs_b, style, genre in tqdm(loader, desc="Training", leave=False):
+        for data_a, data_b, style, genre in tqdm(loader, desc="Training", leave=False):
+            inputs_a, inputs_b = model.backbone.process(data_a, data_b)
             inputs_a, inputs_b = inputs_a.to(device), inputs_b.to(device)
 
             optimizer.zero_grad()
@@ -161,6 +172,9 @@ def train(
             mlflow.log_metric("Genre ARI Avg.", ari_genre_avg, step=epoch)
             mlflow.log_metric("Genre ARI View A", ari_genre_a, step=epoch)
             mlflow.log_metric("Genre ARI View B", ari_genre_b, step=epoch)
+
+            mlflow.log_metric("Temperature Clustering", loss_fn.loss_clusters_fn.temperature, step=epoch)
+            mlflow.log_metric("Temperature Embeddings", loss_fn.loss_embeddings_fn.temperature, step=epoch)
         except:
             tqdm.write(f"No internet connection, metrics were not logged to MLflow for epoch {epoch}.")
 
@@ -178,4 +192,5 @@ def train(
 
     model.load_state_dict(model_best_state)
     model = model.to('cpu')
-    mlflow.pytorch.log_model(model, model.__class__.__name__)
+    model.backbone.wrapper.embedder.random_text_slicing = False
+    mlflow.pytorch.log_model(model, 'model')
