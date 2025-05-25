@@ -54,7 +54,8 @@ def train(
         for param in loss_fn.loss_embeddings_fn.parameters():
             param.requires_grad = False
 
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+    all_parameters = list(model.parameters()) + list(loss_fn.parameters())
+    optimizer = optim.Adam(all_parameters, lr=learning_rate)
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=True, num_workers=4)
 
     n_samples = len(loader)
