@@ -111,6 +111,7 @@ if __name__ == '__main__':
         mlflow.log_param("freeze_temperature_embeddings", args.freeze_temperature_embeddings)
         mlflow.log_param("freeze_temperature_clusters", args.freeze_temperature_clusters)
         mlflow.log_param("random_text_slicing", args.random_text_slicing)
+        mlflow.log_param("captions_file_path", args.captions_file_path)
 
         train(
             model,

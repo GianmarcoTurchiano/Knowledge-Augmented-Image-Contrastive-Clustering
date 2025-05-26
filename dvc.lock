@@ -482,7 +482,7 @@ stages:
       3 --clusters_count 18 --embeddings_dimension 768 --epochs_count 50 --learning_rate
       0.0003 --batch_size 256 --regularization_strength 1.0 --temperature_embeddings
       0.5 --temperature_clusters 1.0 --size 224 --freeze_temperature_embeddings False
-      --freeze_temperature_clusters True --random_text_slicing False
+      --freeze_temperature_clusters True --random_text_slicing True
     deps:
     - path: data/processed/captions.csv
       hash: md5
@@ -503,7 +503,7 @@ stages:
     outs:
     - path: models/img_vs_txt_1_proj.txt
       hash: md5
-      md5: f0081a53a489b69a8bc6afd23fa7d4f6
+      md5: 2fa7096cde583d38eec0ddbd3afa274c
       size: 32
   image_vs_text_raw_double_projection_clustering:
     cmd: python -m kaicc.cluster_img_vs_txt_raw_2_proj --image_archive_path data/raw/images.tar.gz
@@ -513,7 +513,7 @@ stages:
       3 --clusters_count 18 --embeddings_dimension 768 --epochs_count 50 --learning_rate
       0.0003 --batch_size 256 --regularization_strength 1.0 --temperature_embeddings
       0.5 --temperature_clusters 1.0 --size 224 --freeze_temperature_embeddings False
-      --freeze_temperature_clusters True --random_text_slicing False
+      --freeze_temperature_clusters True --random_text_slicing True
     deps:
     - path: data/processed/captions.csv
       hash: md5
@@ -534,7 +534,7 @@ stages:
     outs:
     - path: models/image_vs_text_raw_2_proj.txt
       hash: md5
-      md5: c450e49f8514089d9c531cd90b238f95
+      md5: 8558e6d7457a91f8decefed6497b7f1e
       size: 32
   transformed_image_vs_text_single_projection_clustering:
     cmd: python -m kaicc.cluster_trans_img_vs_txt_1_proj --image_archive_path data/raw/images.tar.gz
@@ -546,7 +546,7 @@ stages:
       0.5 --temperature_clusters 1.0 --size 224 --scale 0.2 1.0 --brightness 0.4 --contrast
       0.4 --saturation 0.4 --hue 0.1 --p_color_jitter 0.8 --p_gray_scale 0.2 --p_gaussian_blur
       0.5 --sigma 0.1 2.0 --freeze_temperature_embeddings False --freeze_temperature_clusters
-      True --random_text_slicing False
+      True --random_text_slicing True
     deps:
     - path: data/processed/captions.csv
       hash: md5
@@ -567,7 +567,7 @@ stages:
     outs:
     - path: models/trans_img_vs_txt_1_proj.txt
       hash: md5
-      md5: cbaef75c59dc1e56295d050636b9dc56
+      md5: 3fac12e9dd107322d96173cc485d2f15
       size: 32
   transformed_image_vs_text_raw_double_projection_clustering:
     cmd: python -m kaicc.cluster_trans_img_vs_txt_raw_2_proj --image_archive_path
