@@ -1,16 +1,16 @@
 n_samples: 5
 
-random_text_slicing: 'True'
+random_text_slicing: 'False'
 freeze_temperature_embeddings: 'False'
-freeze_temperature_clusters: 'False'
+freeze_temperature_clusters: 'True'
 
 training:
   clip_base_model_name: openai/clip-vit-base-patch32
-  clusters_count: 18
+  clusters_count: 32
   embeddings_dimension: 512
   epochs_count: 50
   learning_rate: 3e-4
-  batch_size: 768
+  batch_size: 256
   regularization_strength: 1.0
   temperature_clusters: 1.0
   temperature_embeddings: 0.5
@@ -55,7 +55,7 @@ labels:
 
 images:
   captions:
-    path: 'data/processed/descriptions.csv'
+    path: 'data/processed/captions.csv'
   path:
     archive: 'data/raw/images.tar.gz'
     directory: 'data/processed/images'

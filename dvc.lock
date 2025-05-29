@@ -304,7 +304,7 @@ stages:
       size: 6267
     - path: models/trans_img_vs_trans_img_1_proj.txt
       hash: md5
-      md5: 3716243013816a95a2ce11eaff1b71ca
+      md5: 6fd5e938020db49adf72d83e07578cfe
       size: 32
   transformed_image_vs_transformed_image_raw_single_projection_evaluation:
     cmd: python -m kaicc.evaluate --n_samples 5 --random_seed 42 --run_id_path models/trans_img_vs_trans_img_raw_1_proj.txt
@@ -326,7 +326,7 @@ stages:
       size: 6267
     - path: models/trans_img_vs_trans_img_raw_1_proj.txt
       hash: md5
-      md5: 52621b4cc2d9ab0269b17f154ca5a1bc
+      md5: 6e866d9f18cb6c9e2e2d875e69753b0a
       size: 32
   image_vs_text_single_projection_evaluation:
     cmd: python -m kaicc.evaluate --n_samples 5 --random_seed 42 --run_id_path models/img_vs_txt_1_proj.txt
@@ -348,7 +348,7 @@ stages:
       size: 6267
     - path: models/img_vs_txt_1_proj.txt
       hash: md5
-      md5: f0081a53a489b69a8bc6afd23fa7d4f6
+      md5: 9710f115ef3bcc45d20e6d26077c3f6d
       size: 32
   image_vs_text_raw_double_projection_evaluation:
     cmd: python -m kaicc.evaluate --n_samples 5 --random_seed 42 --run_id_path models/image_vs_text_raw_2_proj.txt
@@ -370,7 +370,7 @@ stages:
       size: 6267
     - path: models/image_vs_text_raw_2_proj.txt
       hash: md5
-      md5: c450e49f8514089d9c531cd90b238f95
+      md5: 92ea0fb5cbd0ce75f163293d7f6f5b3c
       size: 32
   transformed_image_vs_text_single_projection_evaluation:
     cmd: python -m kaicc.evaluate --n_samples 5 --random_seed 42 --run_id_path models/trans_img_vs_txt_1_proj.txt
@@ -392,7 +392,7 @@ stages:
       size: 6267
     - path: models/trans_img_vs_txt_1_proj.txt
       hash: md5
-      md5: cbaef75c59dc1e56295d050636b9dc56
+      md5: 926801d9e9f66cbad7c43b779a1636a9
       size: 32
   transformed_image_vs_text_raw_double_projection_evaluation:
     cmd: python -m kaicc.evaluate --n_samples 5 --random_seed 42 --run_id_path models/trans_img_vs_txt_raw_2_proj.txt
@@ -414,14 +414,14 @@ stages:
       size: 6267
     - path: models/trans_img_vs_txt_raw_2_proj.txt
       hash: md5
-      md5: b8aa6c5a8adaa852b221818cba389651
+      md5: 9c932c2e8d54c933f2ea2d2e378ff0e3
       size: 32
   transformed_image_vs_transformed_image_raw_single_projection_clustering:
     cmd: python -m kaicc.cluster_trans_img_vs_trans_img_raw_1_proj --image_archive_path
       data/raw/images.tar.gz --image_directory_path data/processed/images --labels_file_path
       data/processed/clustering_labels.csv --output_run_id_path models/trans_img_vs_trans_img_raw_1_proj.txt
       --clip_base_model_name openai/clip-vit-base-patch32 --random_seed 42 --patience
-      3 --clusters_count 18 --embeddings_dimension 768 --epochs_count 50 --learning_rate
+      3 --clusters_count 32 --embeddings_dimension 512 --epochs_count 50 --learning_rate
       0.0003 --batch_size 256 --regularization_strength 1.0 --temperature_embeddings
       0.5 --temperature_clusters 1.0 --size 224 --scale 0.2 1.0 --brightness 0.4 --contrast
       0.4 --saturation 0.4 --hue 0.1 --p_color_jitter 0.8 --p_gray_scale 0.2 --p_gaussian_blur
@@ -443,14 +443,14 @@ stages:
     outs:
     - path: models/trans_img_vs_trans_img_raw_1_proj.txt
       hash: md5
-      md5: 52621b4cc2d9ab0269b17f154ca5a1bc
+      md5: 6e866d9f18cb6c9e2e2d875e69753b0a
       size: 32
   transformed_image_vs_transformed_image_single_projection_clustering:
     cmd: python -m kaicc.cluster_trans_img_vs_trans_img_1_proj --image_archive_path
       data/raw/images.tar.gz --image_directory_path data/processed/images --labels_file_path
       data/processed/clustering_labels.csv --output_run_id_path models/trans_img_vs_trans_img_1_proj.txt
       --clip_base_model_name openai/clip-vit-base-patch32 --random_seed 42 --patience
-      3 --clusters_count 18 --embeddings_dimension 768 --epochs_count 50 --learning_rate
+      3 --clusters_count 32 --embeddings_dimension 512 --epochs_count 50 --learning_rate
       0.0003 --batch_size 256 --regularization_strength 1.0 --temperature_embeddings
       0.5 --temperature_clusters 1.0 --size 224 --scale 0.2 1.0 --brightness 0.4 --contrast
       0.4 --saturation 0.4 --hue 0.1 --p_color_jitter 0.8 --p_gray_scale 0.2 --p_gaussian_blur
@@ -472,17 +472,17 @@ stages:
     outs:
     - path: models/trans_img_vs_trans_img_1_proj.txt
       hash: md5
-      md5: 3716243013816a95a2ce11eaff1b71ca
+      md5: 6fd5e938020db49adf72d83e07578cfe
       size: 32
   image_vs_text_single_projection_clustering:
     cmd: python -m kaicc.cluster_img_vs_txt_1_proj --image_archive_path data/raw/images.tar.gz
       --image_directory_path data/processed/images --labels_file_path data/processed/clustering_labels.csv
       --captions_file_path data/processed/captions.csv --output_run_id_path models/img_vs_txt_1_proj.txt
       --clip_base_model_name openai/clip-vit-base-patch32 --random_seed 42 --patience
-      3 --clusters_count 18 --embeddings_dimension 768 --epochs_count 50 --learning_rate
+      3 --clusters_count 32 --embeddings_dimension 512 --epochs_count 50 --learning_rate
       0.0003 --batch_size 256 --regularization_strength 1.0 --temperature_embeddings
       0.5 --temperature_clusters 1.0 --size 224 --freeze_temperature_embeddings False
-      --freeze_temperature_clusters True --random_text_slicing True
+      --freeze_temperature_clusters True --random_text_slicing False
     deps:
     - path: data/processed/captions.csv
       hash: md5
@@ -498,22 +498,22 @@ stages:
       size: 1856987749
     - path: kaicc/cluster_img_vs_txt_1_proj.py
       hash: md5
-      md5: 865dda4ffd852314d4e99416033ec9f7
-      size: 3942
+      md5: 3d3487bd9466e4fd54d024865ab2dd4d
+      size: 4014
     outs:
     - path: models/img_vs_txt_1_proj.txt
       hash: md5
-      md5: 2fa7096cde583d38eec0ddbd3afa274c
+      md5: 9710f115ef3bcc45d20e6d26077c3f6d
       size: 32
   image_vs_text_raw_double_projection_clustering:
     cmd: python -m kaicc.cluster_img_vs_txt_raw_2_proj --image_archive_path data/raw/images.tar.gz
       --image_directory_path data/processed/images --labels_file_path data/processed/clustering_labels.csv
       --captions_file_path data/processed/captions.csv --output_run_id_path models/image_vs_text_raw_2_proj.txt
       --clip_base_model_name openai/clip-vit-base-patch32 --random_seed 42 --patience
-      3 --clusters_count 18 --embeddings_dimension 768 --epochs_count 50 --learning_rate
+      3 --clusters_count 32 --embeddings_dimension 512 --epochs_count 50 --learning_rate
       0.0003 --batch_size 256 --regularization_strength 1.0 --temperature_embeddings
       0.5 --temperature_clusters 1.0 --size 224 --freeze_temperature_embeddings False
-      --freeze_temperature_clusters True --random_text_slicing True
+      --freeze_temperature_clusters True --random_text_slicing False
     deps:
     - path: data/processed/captions.csv
       hash: md5
@@ -529,24 +529,24 @@ stages:
       size: 1856987749
     - path: kaicc/cluster_img_vs_txt_raw_2_proj.py
       hash: md5
-      md5: 658cc3c5925f4d37d03655ab0478a770
-      size: 3953
+      md5: a1114a84fa9792f245abb5e521ec14db
+      size: 4025
     outs:
     - path: models/image_vs_text_raw_2_proj.txt
       hash: md5
-      md5: 8558e6d7457a91f8decefed6497b7f1e
+      md5: 92ea0fb5cbd0ce75f163293d7f6f5b3c
       size: 32
   transformed_image_vs_text_single_projection_clustering:
     cmd: python -m kaicc.cluster_trans_img_vs_txt_1_proj --image_archive_path data/raw/images.tar.gz
       --image_directory_path data/processed/images --labels_file_path data/processed/clustering_labels.csv
       --captions_file_path data/processed/captions.csv --output_run_id_path models/trans_img_vs_txt_1_proj.txt
       --clip_base_model_name openai/clip-vit-base-patch32 --random_seed 42 --patience
-      3 --clusters_count 18 --embeddings_dimension 768 --epochs_count 50 --learning_rate
+      3 --clusters_count 32 --embeddings_dimension 512 --epochs_count 50 --learning_rate
       0.0003 --batch_size 256 --regularization_strength 1.0 --temperature_embeddings
       0.5 --temperature_clusters 1.0 --size 224 --scale 0.2 1.0 --brightness 0.4 --contrast
       0.4 --saturation 0.4 --hue 0.1 --p_color_jitter 0.8 --p_gray_scale 0.2 --p_gaussian_blur
       0.5 --sigma 0.1 2.0 --freeze_temperature_embeddings False --freeze_temperature_clusters
-      True --random_text_slicing True
+      True --random_text_slicing False
     deps:
     - path: data/processed/captions.csv
       hash: md5
@@ -562,12 +562,12 @@ stages:
       size: 1856987749
     - path: kaicc/cluster_trans_img_vs_txt_1_proj.py
       hash: md5
-      md5: 315039822a05597e402f901d9e1f22ca
-      size: 5292
+      md5: 5f55ed661d298d19129c95c04675517c
+      size: 5364
     outs:
     - path: models/trans_img_vs_txt_1_proj.txt
       hash: md5
-      md5: 3fac12e9dd107322d96173cc485d2f15
+      md5: 926801d9e9f66cbad7c43b779a1636a9
       size: 32
   transformed_image_vs_text_raw_double_projection_clustering:
     cmd: python -m kaicc.cluster_trans_img_vs_txt_raw_2_proj --image_archive_path
@@ -575,7 +575,7 @@ stages:
       data/processed/clustering_labels.csv --captions_file_path data/processed/captions.csv
       --output_run_id_path models/trans_img_vs_txt_raw_2_proj.txt --clip_base_model_name
       openai/clip-vit-base-patch32 --random_seed 42 --patience 3 --clusters_count
-      18 --embeddings_dimension 768 --epochs_count 50 --learning_rate 0.0003 --batch_size
+      32 --embeddings_dimension 512 --epochs_count 50 --learning_rate 0.0003 --batch_size
       256 --regularization_strength 1.0 --temperature_embeddings 0.5 --temperature_clusters
       1.0 --size 224 --scale 0.2 1.0 --brightness 0.4 --contrast 0.4 --saturation
       0.4 --hue 0.1 --p_color_jitter 0.8 --p_gray_scale 0.2 --p_gaussian_blur 0.5
@@ -596,10 +596,10 @@ stages:
       size: 1856987749
     - path: kaicc/cluster_trans_img_vs_txt_raw_2_proj.py
       hash: md5
-      md5: b8c2578996ed96e71bc2f978819b10d4
-      size: 5303
+      md5: e11dce2af6e46ea2aa2838374ac3301a
+      size: 5375
     outs:
     - path: models/trans_img_vs_txt_raw_2_proj.txt
       hash: md5
-      md5: b8aa6c5a8adaa852b221818cba389651
+      md5: 9c932c2e8d54c933f2ea2d2e378ff0e3
       size: 32
