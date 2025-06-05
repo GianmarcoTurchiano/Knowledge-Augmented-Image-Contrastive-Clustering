@@ -6,7 +6,7 @@ freeze_temperature_clusters: 'True'
 
 training:
   clip_base_model_name: openai/clip-vit-base-patch32
-  clusters_count: 32
+  clusters_count: 18
   embeddings_dimension: 512
   epochs_count: 50
   learning_rate: 3e-4
