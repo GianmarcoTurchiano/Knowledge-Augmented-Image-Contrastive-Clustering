@@ -16,35 +16,18 @@ if __name__ == '__main__':
     df_triples = pd.read_csv('data/processed/triples.csv')
     df_texts = pd.read_csv('data/processed/node_texts.csv')
 
-    _, relations_unique = pd.factorize(df_triples['relation'])
-    relations_to_idx = {rel: i for i, rel in enumerate(relations_unique)}
+    #_, relations_unique = pd.factorize(df_triples['relation'])
+    #relations_to_idx = {rel: i for i, rel in enumerate(relations_unique)}
 
     for pic_filename in df_labels['subject']:
         df_pics, df_artists = f(df_triples, pic_filename)
 
-        for _, row in df_pics.iterrows():
-            relation = row['relation']
-            relation_idx = relations_to_idx[relation]
+        print(df_pics)
+        print(df_artists)
 
-            subject = row['subject']
-            property = row['property']
+        print()
 
-            subject_filter = df_texts['property'] == subject
-            property_filter = df_texts['property'] == property
-
-            subject_idx = df_texts.index[subject_filter]
-            property_idx = df_texts.index[property_filter]
-
-            print(property)
-            print(property_idx)
-
-            if not subject_idx.empty:
-                print(subject)
-                print(subject_idx)
-
-        break
-
-        #df_combined = pd.concat([df_pics, df_artists], ignore_index=True)
+        #df_combined = zpd.concat([df_pics, df_artists], ignore_index=True)
         #print(df_combined)
         #print()
 

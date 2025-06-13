@@ -35,6 +35,7 @@ triples:
   path:
     all: 'data/raw/triples.csv'
     filtered: 'data/processed/triples.csv'
+    enumerated: 'data/processed/triples_enum.csv'
 
 texts:
   path:

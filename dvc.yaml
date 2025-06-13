@@ -11,13 +11,23 @@ stages:
     - ${triples.path.filtered}
     - ${labels.path.clustering.all}
 
+  entities_enumeration:
+    cmd: python -m kaicc.enumerate_entities
+      --input_triples_file_path ${triples.path.filtered}
+      --output_triples_file_path ${triples.path.enumerated}
+    deps:
+    - kaicc/enumerate_entities.py
+    - ${triples.path.filtered}
+    outs:
+    - ${triples.path.enumerated}
+
   node_texts_generation:
     cmd: python -m kaicc.generate_node_texts
-      --input_triples_file_path ${triples.path.filtered}
+      --input_triples_file_path ${triples.path.enumerated}
       --output_node_texts_file_path ${texts.path.entities}
     deps:
     - kaicc/generate_node_texts.py
-    - ${triples.path.filtered}
+    - ${triples.path.enumerated}
     outs:
     - ${texts.path.entities}
 

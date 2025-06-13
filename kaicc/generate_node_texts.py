@@ -37,5 +37,6 @@ if __name__ == '__main__':
     df = df.drop_duplicates()
     df['text'] = df.apply(generate_property_string, axis=1)
 
-    df = df.drop(['relation', 'subject_type', 'property_type', 'relation_idx'], axis=1)
+    df = df.drop(['relation', 'subject_type', 'property_type', 'relation_idx', 'subject_idx'], axis=1)
+        
     df.to_csv(args.output_node_texts_file_path, index=False)

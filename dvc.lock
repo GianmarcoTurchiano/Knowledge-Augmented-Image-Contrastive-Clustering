@@ -44,22 +44,22 @@ stages:
       md5: ceb07f08415ab5ffea6fd9efd678121b
       size: 47070166
   node_texts_generation:
-    cmd: python -m kaicc.generate_node_texts --input_triples_file_path data/processed/triples.csv
+    cmd: python -m kaicc.generate_node_texts --input_triples_file_path data/processed/triples_enum.csv
       --output_node_texts_file_path data/processed/entities_texts.csv
     deps:
-    - path: data/processed/triples.csv
+    - path: data/processed/triples_enum.csv
       hash: md5
-      md5: ceb07f08415ab5ffea6fd9efd678121b
-      size: 47070166
+      md5: 37f82aff7416f0249f6b8a8d070f9293
+      size: 53694157
     - path: kaicc/generate_node_texts.py
       hash: md5
-      md5: 7764274afb0413dc2e37e34684cbd6e4
-      size: 1263
+      md5: 5164ae542cc3a7362056f0a37c7914d8
+      size: 1287
     outs:
     - path: data/processed/entities_texts.csv
       hash: md5
-      md5: 7397d85997da92be086d6efe988b91fb
-      size: 1358022
+      md5: c47322319416d2624ba285f517b3bb07
+      size: 39753313
   labels_splitting:
     cmd: python -m kaicc.split_labels --input_labels_file_path data/interim/labels.csv
       --output_pretraining_labels_file_path data/interim/pretraining_labels.csv --output_clustering_labels_file_path
@@ -603,3 +603,20 @@ stages:
       hash: md5
       md5: 9cbb8566e0ab81153d9743aa3a60f46e
       size: 32
+  entities_enumeration:
+    cmd: python -m kaicc.enumerate_entities --input_triples_file_path data/processed/triples.csv
+      --output_triples_file_path data/processed/triples_enum.csv
+    deps:
+    - path: data/processed/triples.csv
+      hash: md5
+      md5: ceb07f08415ab5ffea6fd9efd678121b
+      size: 47070166
+    - path: kaicc/enumerate_entities.py
+      hash: md5
+      md5: d1ec27ebe96c18ec2ce9ae8e25450282
+      size: 639
+    outs:
+    - path: data/processed/triples_enum.csv
+      hash: md5
+      md5: 37f82aff7416f0249f6b8a8d070f9293
+      size: 53694157
